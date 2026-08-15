@@ -41,7 +41,7 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
   // Franchise ROI Calculator State
   const [propertySqFt, setPropertySqFt] = useState<number>(2500);
   const [studentCapacity, setStudentCapacity] = useState<number>(75);
-  const [monthlyFeePerChild, setMonthlyFeePerChild] = useState<number>(180);
+  const [monthlyFeePerChild, setMonthlyFeePerChild] = useState<number>(4500);
 
   // Franchise Form State
   const [formData, setFormData] = useState({
@@ -50,7 +50,7 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
     email: '',
     city: '',
     experience: 'Educator / School Owner',
-    investmentBudget: '$30,000 – $50,000',
+    investmentBudget: '₹18 Lakhs – ₹25 Lakhs',
     propertyAvailable: 'Commercial Space Available (2,000+ sq ft)',
     message: '',
   });
@@ -61,8 +61,8 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
   const estimatedOperatingExpenses = annualGrossRevenue * 0.45;
   const estimatedAnnualNetProfit = annualGrossRevenue - estimatedOperatingExpenses;
   const estimatedPaybackMonths = Math.max(
-    14,
-    Math.round((45000 / (estimatedAnnualNetProfit / 12)) * 10) / 10
+    12,
+    Math.round((2000000 / (estimatedAnnualNetProfit / 12)) * 10) / 10
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -99,7 +99,7 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
         email: '',
         city: '',
         experience: 'Educator / School Owner',
-        investmentBudget: '$30,000 – $50,000',
+        investmentBudget: '₹18 Lakhs – ₹25 Lakhs',
         propertyAvailable: 'Commercial Space Available (2,000+ sq ft)',
         message: '',
       });
@@ -290,25 +290,25 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                 <div>
                   <div className="flex justify-between items-center mb-1">
                     <label className="font-heading font-extrabold text-sm text-[#173B5E]">
-                      Monthly Tuition Fee Per Child ($):
+                      Monthly Tuition Fee Per Child (₹):
                     </label>
                     <span className="font-heading font-black text-lg text-[#29B6F6]">
-                      ${monthlyFeePerChild} / Mo
+                      ₹{monthlyFeePerChild.toLocaleString('en-IN')} / Mo
                     </span>
                   </div>
                   <input
                     type="range"
-                    min={100}
-                    max={400}
-                    step={10}
+                    min={2000}
+                    max={12000}
+                    step={500}
                     value={monthlyFeePerChild}
                     onChange={(e) => setMonthlyFeePerChild(Number(e.target.value))}
                     className="w-full accent-[#29B6F6] cursor-pointer"
                   />
                   <div className="flex justify-between text-[11px] font-bold text-gray-500">
-                    <span>$100</span>
-                    <span>$250</span>
-                    <span>$400</span>
+                    <span>₹2,000</span>
+                    <span>₹6,000</span>
+                    <span>₹12,000</span>
                   </div>
                 </div>
 
@@ -343,14 +343,14 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                   <div className="p-3.5 rounded-2xl bg-white/10 border border-white/10">
                     <div className="text-xs text-white/70">Est. Gross Annual Revenue</div>
                     <div className="font-heading font-black text-xl sm:text-2xl text-[#FFD21F] mt-1">
-                      ${annualGrossRevenue.toLocaleString()}
+                      ₹{annualGrossRevenue.toLocaleString('en-IN')}
                     </div>
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-white/10 border border-white/10">
                     <div className="text-xs text-white/70">Est. Net Annual Profit</div>
                     <div className="font-heading font-black text-xl sm:text-2xl text-[#5BC85A] mt-1">
-                      ${estimatedAnnualNetProfit.toLocaleString()}
+                      ₹{estimatedAnnualNetProfit.toLocaleString('en-IN')}
                     </div>
                   </div>
                 </div>
@@ -410,7 +410,7 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Robert Zhang"
+                      placeholder="e.g. Rajesh Kumar"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
@@ -424,7 +424,7 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                     <input
                       type="tel"
                       required
-                      placeholder="+1 (555) 000-0000"
+                      placeholder="+91 98452 96096"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
@@ -440,7 +440,7 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                     <input
                       type="email"
                       required
-                      placeholder="partner@example.com"
+                      placeholder="partner@gmail.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
@@ -454,7 +454,7 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Austin, Texas"
+                      placeholder="e.g. Bengaluru, Mysuru, Hyderabad"
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                       className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
@@ -472,10 +472,10 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                       onChange={(e) => setFormData({ ...formData, investmentBudget: e.target.value })}
                       className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
                     >
-                      <option value="$25,000 – $40,000">$25,000 – $40,000</option>
-                      <option value="$40,000 – $75,000">$40,000 – $75,000</option>
-                      <option value="$75,000 – $150,000">$75,000 – $150,000</option>
-                      <option value="$150,000+ (Multi-Unit)">$150,000+ (Multi-Unit)</option>
+                      <option value="₹12 Lakhs – ₹18 Lakhs">₹12 Lakhs – ₹18 Lakhs</option>
+                      <option value="₹18 Lakhs – ₹25 Lakhs">₹18 Lakhs – ₹25 Lakhs</option>
+                      <option value="₹25 Lakhs – ₹40 Lakhs">₹25 Lakhs – ₹40 Lakhs</option>
+                      <option value="₹40 Lakhs+ (Multi-Unit)">₹40 Lakhs+ (Multi-Unit)</option>
                     </select>
                   </div>
 

@@ -40,7 +40,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmissionModal
 
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="https://wa.me/?text=Hello%20A%20Kid's%20Pre%20School!"
+                href="https://wa.me/919845296096?text=Hello%20A%20Kid's%20Pre%20School!"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-xl bg-[#5BC85A] text-white flex items-center justify-center hover:scale-110 transition-transform"
@@ -197,19 +197,21 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmissionModal
             <div className="space-y-2.5 text-xs text-white/80">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-[#FFD21F] shrink-0 mt-0.5" />
-                <span>124 Sunshine Boulevard, Wonder District [INSERT SCHOOL ADDRESS]</span>
+                <span className="leading-relaxed">
+                  156, Doctor layout, 1st main road, Hosa Rd, Naganathapura, Bengaluru, KA 560100
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-[#5BC85A] shrink-0" />
-                <span>+1 (555) 321-KIDS / +1 (555) 789-ROAR</span>
+                <span>+91 9845296096 / +91 9945531032</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#29B6F6] shrink-0" />
-                <span>admissions@akidspreschool.edu</span>
+                <span>akidspreschool@gmail.com</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-[#FF8A3D] shrink-0" />
-                <span>Mon – Fri: 8:00 AM – 6:30 PM</span>
+                <span>Mon – Sat: 8:30 AM – 6:30 PM</span>
               </div>
             </div>
 
@@ -242,10 +244,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmissionModal
               Terms & Conditions
             </button>
             <button
-              onClick={() => handleNav('admin')}
-              className="text-[#FFD21F] hover:underline font-bold"
+              onClick={() => handleNav('contact')}
+              className="hover:text-white transition-colors"
             >
-              Staff Login
+              Contact School
             </button>
           </div>
         </div>

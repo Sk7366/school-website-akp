@@ -275,7 +275,7 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Jessica Miller"
+                      placeholder="e.g. Priya Sharma"
                       value={parentName}
                       onChange={(e) => setParentName(e.target.value)}
                       className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
@@ -289,7 +289,7 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
                     <input
                       type="tel"
                       required
-                      placeholder="+1 (555) 000-0000"
+                      placeholder="+91 98452 96096"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
@@ -304,7 +304,7 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
                     </label>
                     <input
                       type="email"
-                      placeholder="parent@example.com"
+                      placeholder="parent@gmail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
@@ -317,7 +317,7 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Lucas"
+                      placeholder="e.g. Aarav"
                       value={childName}
                       onChange={(e) => setChildName(e.target.value)}
                       className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"

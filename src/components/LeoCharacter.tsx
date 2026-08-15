@@ -36,7 +36,7 @@ export interface LeoCharacterProps {
 
 // ---------------------------------------------------------------------------
 // CHARACTER ASSET CONFIGURATION & STATE MAPPING
-// Source of truth: Original uploaded Leo image files
+// Directly referencing public folder mascot files
 // ---------------------------------------------------------------------------
 export const LEO_ASSETS = [
   { id: 'lion-1', src: '/lion-1.jpg', role: 'Teacher & Guide', desc: 'Learning, curiosity & academics' },
@@ -60,6 +60,7 @@ export const preloadLeoImages = () => {
 
 interface StateConfig {
   imageSrc: string;
+  fallbackIcon: string;
   alt: string;
   defaultMessage: string;
   defaultSubMessage: string;
@@ -70,20 +71,23 @@ interface StateConfig {
 const STATE_MAP: Record<LeoCharacterState, StateConfig> = {
   welcome: {
     imageSrc: '/lion-1.jpg',
+    fallbackIcon: '🦁🎒',
     alt: "Leo the Lion welcoming visitors to A Kid's Pre School",
     defaultMessage: "Hi! I'm Leo! 🦁",
-    defaultSubMessage: "I'll show you around.",
+    defaultSubMessage: "I'll show you around our joyful preschool!",
     motionClass: 'animate-leo-welcome',
   },
   idle: {
     imageSrc: '/lion-1.jpg',
+    fallbackIcon: '🦁✨',
     alt: 'Leo the Lion standing friendly and curious',
     defaultMessage: "Hi! I'm Leo. Ready to explore?",
-    defaultSubMessage: 'Come on, let\'s see what we learn today!',
+    defaultSubMessage: "Come on, let's see what we learn today!",
     motionClass: 'animate-leo-breathe',
   },
   learning: {
     imageSrc: '/lion-1.jpg',
+    fallbackIcon: '🦁📚',
     alt: 'Teacher Leo with blue glasses pointing to the chalkboard',
     defaultMessage: "Come on, let's see what we learn today! 📚",
     defaultSubMessage: 'Play-based learning opens up magical worlds.',
@@ -91,6 +95,7 @@ const STATE_MAP: Record<LeoCharacterState, StateConfig> = {
   },
   thinking: {
     imageSrc: '/lion-1.jpg',
+    fallbackIcon: '🦁💡',
     alt: 'Leo thinking with his glasses and chalkboard',
     defaultMessage: 'Hmm, let Leo check that for you...',
     defaultSubMessage: 'Searching our preschool memory bank!',
@@ -98,6 +103,7 @@ const STATE_MAP: Record<LeoCharacterState, StateConfig> = {
   },
   talking: {
     imageSrc: '/lion-1.jpg',
+    fallbackIcon: '🦁💬',
     alt: 'Leo explaining and speaking warmly',
     defaultMessage: 'Here is what I found for you! 🦁',
     defaultSubMessage: 'Ask me anything about our campus or admissions.',
@@ -105,6 +111,7 @@ const STATE_MAP: Record<LeoCharacterState, StateConfig> = {
   },
   excited: {
     imageSrc: '/lion-2.jpg',
+    fallbackIcon: '🦁⚡',
     alt: 'Superhero Leo with red mask and lightning bolt cape',
     defaultMessage: 'That sounds roarsome! 🦁',
     defaultSubMessage: 'Every child is a superhero with boundless curiosity.',
@@ -112,13 +119,15 @@ const STATE_MAP: Record<LeoCharacterState, StateConfig> = {
   },
   celebrating: {
     imageSrc: '/lion-2.jpg',
+    fallbackIcon: '🦁🎉',
     alt: 'Superhero Leo celebrating a successful enquiry',
     defaultMessage: 'Roar-some! 🎉',
-    defaultSubMessage: "We'll see you soon!",
+    defaultSubMessage: "We'll see you soon at campus!",
     motionClass: 'animate-leo-celebrate',
   },
   music: {
     imageSrc: '/lion-3.jpg',
+    fallbackIcon: '🦁🎵',
     alt: 'Music Leo with golden DJ headphones surrounded by musical notes',
     defaultMessage: 'Sing, dance, and feel the beat! 🎵',
     defaultSubMessage: 'Rhythm circles, joyful instruments, and singing all day.',
@@ -126,6 +135,7 @@ const STATE_MAP: Record<LeoCharacterState, StateConfig> = {
   },
   reading: {
     imageSrc: '/lion-4.jpg',
+    fallbackIcon: '🦁📖',
     alt: 'Reader Leo at his school desk with a book, waving hello',
     defaultMessage: 'Welcome to our story den! 📖',
     defaultSubMessage: 'Picture books, fairy tales, and phonics safaris.',
@@ -133,6 +143,7 @@ const STATE_MAP: Record<LeoCharacterState, StateConfig> = {
   },
   art: {
     imageSrc: '/lion-5.jpg',
+    fallbackIcon: '🦁🎨',
     alt: 'Artist Leo painting on an easel with his color palette',
     defaultMessage: "Let's paint a masterpiece! 🎨",
     defaultSubMessage: 'From finger paintings to clay crafts and imagination.',
@@ -140,6 +151,7 @@ const STATE_MAP: Record<LeoCharacterState, StateConfig> = {
   },
   calm: {
     imageSrc: '/lion-6.jpg',
+    fallbackIcon: '🦁🧘',
     alt: 'Zen Leo in lotus yoga pose with glowing heart',
     defaultMessage: 'Take a deep breath and smile! 🧘',
     defaultSubMessage: 'Animal yoga, mindfulness, and calm confident hearts.',
@@ -147,6 +159,7 @@ const STATE_MAP: Record<LeoCharacterState, StateConfig> = {
   },
   tour: {
     imageSrc: '/lion-1.jpg',
+    fallbackIcon: '🦁🏫',
     alt: 'Leo inviting parents to a campus walkthrough',
     defaultMessage: 'Come see where the adventure begins! 🦁',
     defaultSubMessage: 'Shall we book a school tour?',
@@ -183,12 +196,14 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
   // Track image crossfade when state changes
   const [displayedSrc, setDisplayedSrc] = useState(config.imageSrc);
   const [isFading, setIsFading] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (config.imageSrc !== displayedSrc) {
       setIsFading(true);
       const timer = setTimeout(() => {
         setDisplayedSrc(config.imageSrc);
+        setImageError(false);
         setIsFading(false);
       }, 150);
       return () => clearTimeout(timer);
@@ -226,7 +241,6 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
 
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        // If user clicked outside, close bubble
         setIsBubbleVisible(false);
         setIsUserInteracting(false);
       }
@@ -278,23 +292,23 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
       className={`relative inline-flex items-end justify-center select-none ${className}`}
     >
       {/* ----------------------------------------------------------------- */}
-      {/* LEO SPEECH BUBBLE (White/Cream bg, Orange border, Deep Navy text) */}
+      {/* LEO SPEECH BUBBLE */}
       {/* ----------------------------------------------------------------- */}
       {isBubbleVisible && (
         <div
-          className={`absolute z-30 animate-leo-bubble w-[290px] sm:w-[320px] bg-[#FFF8EE] border-3 border-[#F4511E] rounded-2xl p-4 shadow-2xl text-left pointer-events-auto ${
+          className={`absolute z-50 animate-leo-bubble w-[290px] sm:w-[320px] max-w-[calc(100vw-32px)] bg-[#FFF8EE] border-3 border-[#F4511E] rounded-2xl p-4 shadow-2xl text-left pointer-events-auto ${
             bubblePlacement === 'left'
               ? 'right-full mr-4 bottom-8'
               : bubblePlacement === 'right'
               ? 'left-full ml-4 bottom-8'
               : bubblePlacement === 'bottom'
               ? 'top-full mt-4 left-1/2 -translate-x-1/2'
-              : 'bottom-[96%] left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 mb-3'
+              : 'bottom-[96%] left-1/2 -translate-x-1/2 mb-3'
           }`}
           role="dialog"
           aria-label="Leo Mascot Speech Bubble"
         >
-          {/* Speech Bubble Tail pointing toward Leo */}
+          {/* Speech Bubble Tail */}
           <div
             className={`absolute w-4 h-4 bg-[#FFF8EE] border-[#F4511E] transform rotate-45 ${
               bubblePlacement === 'left'
@@ -303,7 +317,7 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
                 ? '-left-2.5 bottom-10 border-b-3 border-l-3'
                 : bubblePlacement === 'bottom'
                 ? '-top-2.5 left-1/2 -translate-x-1/2 border-t-3 border-l-3'
-                : '-bottom-2.5 left-1/2 sm:left-auto sm:right-16 -translate-x-1/2 border-b-3 border-r-3'
+                : '-bottom-2.5 left-1/2 -translate-x-1/2 border-b-3 border-r-3'
             }`}
           />
 
@@ -321,7 +335,7 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
                   e.stopPropagation();
                   setIsBubbleVisible(false);
                 }}
-                className="text-gray-400 hover:text-[#183B56] hover:bg-orange-100/50 p-1 rounded-full transition-colors"
+                className="text-gray-400 hover:text-[#183B56] hover:bg-orange-100/50 p-1 rounded-full transition-colors cursor-pointer"
                 aria-label="Close Leo speech bubble"
               >
                 ✕
@@ -342,11 +356,11 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
                 onClick={() =>
                   handleAction(() => handleScrollTo('programs-section', 'programs'))
                 }
-                className="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-orange-50 border border-orange-100 hover:border-orange-300 font-bold text-xs text-[#183B56] flex items-center justify-between group transition-all duration-200 shadow-2xs hover:scale-[1.015]"
+                className="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-orange-50 border border-orange-100 hover:border-orange-300 font-bold text-xs text-[#183B56] flex items-center justify-between group transition-all duration-200 shadow-2xs hover:scale-[1.015] cursor-pointer"
               >
                 <span className="flex items-center gap-2">
                   <span className="text-sm">🎒</span>
-                  <span>Programs</span>
+                  <span>Explore Programs</span>
                 </span>
                 <span className="text-[10px] text-orange-500 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                   View →
@@ -363,11 +377,11 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
                     }
                   })
                 }
-                className="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-orange-50 border border-orange-100 hover:border-orange-300 font-bold text-xs text-[#183B56] flex items-center justify-between group transition-all duration-200 shadow-2xs hover:scale-[1.015]"
+                className="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-orange-50 border border-orange-100 hover:border-orange-300 font-bold text-xs text-[#183B56] flex items-center justify-between group transition-all duration-200 shadow-2xs hover:scale-[1.015] cursor-pointer"
               >
                 <span className="flex items-center gap-2">
                   <span className="text-sm">🏫</span>
-                  <span>Book a Tour</span>
+                  <span>Book Campus Tour</span>
                 </span>
                 <span className="text-[10px] text-orange-500 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                   Book →
@@ -375,30 +389,15 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
               </button>
 
               <button
-                onClick={() =>
-                  handleAction(() => handleScrollTo('activities-section', 'activities'))
-                }
-                className="w-full text-left px-3 py-2 rounded-xl bg-white hover:bg-orange-50 border border-orange-100 hover:border-orange-300 font-bold text-xs text-[#183B56] flex items-center justify-between group transition-all duration-200 shadow-2xs hover:scale-[1.015]"
-              >
-                <span className="flex items-center gap-2">
-                  <span className="text-sm">🎨</span>
-                  <span>Activities</span>
-                </span>
-                <span className="text-[10px] text-orange-500 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                  Explore →
-                </span>
-              </button>
-
-              <button
                 onClick={() => handleAction(handleOpenAskLeo)}
-                className="w-full text-left px-3 py-2 rounded-xl bg-gradient-to-r from-[#FFF0D4] to-[#FFE2B3] hover:from-[#FFE6BF] hover:to-[#FFD899] border border-[#FFC928] font-extrabold text-xs text-[#F4511E] flex items-center justify-between group transition-all duration-200 shadow-2xs hover:scale-[1.015]"
+                className="w-full text-left px-3 py-2 rounded-xl bg-gradient-to-r from-[#FFF0D4] to-[#FFE2B3] hover:from-[#FFE6BF] hover:to-[#FFD899] border border-[#FFC928] font-extrabold text-xs text-[#F4511E] flex items-center justify-between group transition-all duration-200 shadow-2xs hover:scale-[1.015] cursor-pointer"
               >
                 <span className="flex items-center gap-2">
                   <span className="text-sm">💬</span>
-                  <span>Ask Leo</span>
+                  <span>Ask Leo (AI Chat)</span>
                 </span>
                 <span className="text-[10px] bg-[#F4511E] text-white px-2 py-0.5 rounded-full font-bold uppercase text-[9px] tracking-wide">
-                  Live Chat
+                  Instant
                 </span>
               </button>
             </div>
@@ -407,7 +406,7 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
       )}
 
       {/* ----------------------------------------------------------------- */}
-      {/* HOVER TOOLTIP PEEK (when bubble is closed) */}
+      {/* HOVER TOOLTIP */}
       {/* ----------------------------------------------------------------- */}
       {!isBubbleVisible && isHovered && interactive && (
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap bg-[#183B56] text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-lg border border-[#FFC928] flex items-center gap-1.5 animate-leo-bubble">
@@ -418,18 +417,20 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
       )}
 
       {/* ----------------------------------------------------------------- */}
-      {/* LEO CHARACTER IMAGE CONTAINER (Natural integration, no giant circle) */}
+      {/* LEO CHARACTER IMAGE CONTAINER */}
       {/* ----------------------------------------------------------------- */}
       <div
         onClick={handleCharacterClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`${config.motionClass} relative transition-all duration-300 transform-gpu cursor-pointer group ${
+        className={`${config.motionClass} relative transition-all duration-300 transform-gpu cursor-pointer group flex items-center justify-center ${
           isHovered ? 'scale-105 -translate-y-1 drop-shadow-2xl' : 'drop-shadow-lg'
         }`}
         style={{
           width: typeof size === 'number' ? `${size}px` : size,
           height: typeof size === 'number' ? `${size}px` : size,
+          minWidth: typeof size === 'number' ? `${size}px` : size,
+          minHeight: typeof size === 'number' ? `${size}px` : size,
         }}
         title={interactive ? 'Click Leo to explore with your preschool guide!' : config.alt}
         role={interactive ? 'button' : 'img'}
@@ -444,24 +445,44 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
         {/* Soft Organic Shadow under Leo's feet */}
         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3/4 h-4 bg-black/15 rounded-full blur-md -z-10" />
 
-        {/* Source of truth: Original Uploaded Leo Image with smooth crossfade */}
-        <img
-          src={displayedSrc}
-          alt={altText || config.alt}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-          }}
-          className={`rounded-3xl pointer-events-none transition-all duration-300 ${
-            isFading ? 'opacity-40 scale-95' : 'opacity-100 scale-100'
-          }`}
-          loading="eager"
-        />
+        {!imageError ? (
+          <img
+            src={displayedSrc}
+            alt={altText || config.alt}
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (target.src.includes('lion-')) {
+                const match = target.src.match(/lion-(\d)\.jpg/);
+                if (match) {
+                  target.src = `/lion%20${match[1]}.jpg`;
+                  return;
+                }
+              }
+              setImageError(true);
+            }}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+            }}
+            className={`rounded-3xl pointer-events-none transition-all duration-300 drop-shadow-md ${
+              isFading ? 'opacity-40 scale-95' : 'opacity-100 scale-100'
+            }`}
+            loading="eager"
+          />
+        ) : (
+          <div className="w-full h-full rounded-3xl bg-white/90 border-4 border-[#FFD21F] shadow-xl flex flex-col items-center justify-center p-4 text-center">
+            <span className="text-7xl">{config.fallbackIcon}</span>
+            <span className="font-heading font-black text-sm text-[#173B5E] mt-2">
+              Meet Leo The Lion
+            </span>
+          </div>
+        )}
 
         {/* Interactive Cue Badge on hover */}
         {interactive && !isBubbleVisible && (
-          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#F4511E] text-white text-[10px] sm:text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md border-2 border-white flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#F4511E] text-white text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md border-2 border-white flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FFD21F] animate-ping" />
             <span>Chat with Leo</span>
           </div>

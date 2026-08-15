@@ -18,7 +18,7 @@ export const AdmissionPopup: React.FC<AdmissionPopupProps> = ({ isOpen, onClose,
     phone: '',
     childAge: '2.5 Years (Nursery)',
     enquiryType: 'Admissions 2026-27',
-    city: 'Main Campus',
+    city: 'Bengaluru Campus',
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
@@ -152,7 +152,7 @@ export const AdmissionPopup: React.FC<AdmissionPopupProps> = ({ isOpen, onClose,
                     id="popup-parent-name"
                     type="text"
                     required
-                    placeholder="e.g. Sarah Jenkins"
+                    placeholder="e.g. Priya Sharma"
                     value={formData.parentName}
                     onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
                     className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-[#FFF9EC]/40 text-[#173B5E] font-medium"
@@ -172,7 +172,7 @@ export const AdmissionPopup: React.FC<AdmissionPopupProps> = ({ isOpen, onClose,
                       id="popup-phone"
                       type="tel"
                       required
-                      placeholder="+1 (555) 000-0000"
+                      placeholder="+91 98452 96096"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-[#FFF9EC]/40 text-[#173B5E] font-medium"
@@ -189,7 +189,7 @@ export const AdmissionPopup: React.FC<AdmissionPopupProps> = ({ isOpen, onClose,
                     <input
                       id="popup-email"
                       type="email"
-                      placeholder="parent@example.com"
+                      placeholder="parent@gmail.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-[#FFF9EC]/40 text-[#173B5E] font-medium"
@@ -240,14 +240,14 @@ export const AdmissionPopup: React.FC<AdmissionPopupProps> = ({ isOpen, onClose,
               {/* City / Location */}
               <div>
                 <label className="block text-xs font-bold text-[#173B5E] mb-1">
-                  Preferred Campus / City
+                  Locality / Area in Bengaluru
                 </label>
                 <div className="relative">
                   <MapPin className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
                   <input
                     id="popup-city"
                     type="text"
-                    placeholder="e.g. Downtown Central Campus"
+                    placeholder="e.g. Hosa Road, Electronic City, Singasandra"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-[#FFF9EC]/40 text-[#173B5E] font-medium"

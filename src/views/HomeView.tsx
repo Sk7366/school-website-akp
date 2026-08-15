@@ -60,9 +60,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
     'teacher' | 'super' | 'artist' | 'reader' | 'music' | 'meditate'
   >('teacher');
 
-  // Video Modal State
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-
   // Testimonials carousel state
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
 
@@ -211,7 +208,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-black text-base sm:text-lg tracking-wide shadow-xl shadow-[#F4511E]/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 border-2 border-[#FF8A3D]"
                 >
                   <Calendar className="w-5 h-5" />
-                  BOOK A TOUR
+                  BOOK A CAMPUS TOUR
                 </button>
 
                 {/* Secondary CTA: EXPLORE PROGRAMS */}
@@ -222,18 +219,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 >
                   <Sparkles className="w-5 h-5 text-[#F4511E]" />
                   EXPLORE PROGRAMS
-                </button>
-
-                {/* Video Tour Watch Button */}
-                <button
-                  id="hero-watch-video-btn"
-                  onClick={() => setIsVideoModalOpen(true)}
-                  className="inline-flex items-center gap-2 text-white/90 hover:text-[#FFD21F] font-bold text-sm px-3 py-2 transition-colors cursor-pointer"
-                >
-                  <div className="w-9 h-9 rounded-full bg-white/15 border border-white/30 flex items-center justify-center text-white">
-                    <Play className="w-4 h-4 fill-white ml-0.5" />
-                  </div>
-                  <span>Watch Video Tour</span>
                 </button>
               </div>
 
@@ -419,7 +404,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
 
           {/* Interactive World Grid: 6 Switcher Cards (Left) & Active Mascot Showcase (Right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#FFF9EC] p-6 sm:p-10 rounded-3xl border-4 border-[#FFD21F] shadow-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#FFF9EC] p-6 sm:p-10 rounded-3xl border-4 border-[#FFD21F] shadow-xl overflow-visible">
             {/* 6 Interactive Selector Cards (7 cols) */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {leoPersonas.map((persona) => {
@@ -472,7 +457,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
 
             {/* Active Persona Showcase (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col items-center text-center p-6 sm:p-8 bg-white rounded-3xl border-3 shadow-md relative overflow-hidden"
+            <div className="lg:col-span-5 flex flex-col items-center text-center p-6 sm:p-8 bg-white rounded-3xl border-3 shadow-md relative overflow-visible z-20"
               style={{ borderColor: currentPersona.color }}
             >
               {/* Tag Pill */}
@@ -691,23 +676,23 @@ export const HomeView: React.FC<HomeViewProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 5B. INTERACTIVE DIGITAL WORLD & PARENT TOOLS */}
+      {/* 5B. INTERACTIVE LEARNING & SCHOOL FEATURES */}
       {/* ========================================================================= */}
       <section id="interactive-tools-section" className="py-16 sm:py-20 bg-gradient-to-b from-white to-[#FFF9EC] relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="text-center max-w-3xl mx-auto space-y-3">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FFD21F] text-[#173B5E] text-xs font-extrabold uppercase tracking-wide shadow-xs">
-              <Sparkles className="w-3.5 h-3.5" /> Interactive Digital World
+              <Sparkles className="w-3.5 h-3.5" /> Interactive Learning & Campuses
             </div>
             <h2 className="font-heading font-black text-3xl sm:text-5xl text-[#173B5E] tracking-tight">
-              Explore <span className="text-[#F4511E]">Leo’s Smart Features</span>
+              Explore <span className="text-[#F4511E]">A Kid’s Pre School</span>
             </h2>
             <p className="text-base text-gray-700 font-medium">
-              Engaging tools for little learners and modern real-time tracking for caring parents.
+              Interactive games for curious little learners, holistic developmental programs, and welcoming multi-branch campuses.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {/* Tool 1: Kids Zone */}
             <div
               onClick={() => onNavigate('kids-zone')}
@@ -715,13 +700,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
             >
               <div className="space-y-3">
                 <div className="w-14 h-14 rounded-2xl overflow-hidden bg-yellow-100 border border-yellow-300 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <img src="/lion-2.jpg" alt="Leo's Kids Zone" className="w-full h-full object-cover" />
+                  <img
+                    src="/lion-2.jpg"
+                    alt="Leo's Kids Zone"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/lion%202.jpg';
+                    }}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="font-heading font-extrabold text-xl text-[#173B5E]">
                   Leo’s Kids Zone
                 </h3>
                 <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                  ABC Phonics Safari (26 letters with cheerful audio), Leo’s Read-Along Storybook, and shape puzzles.
+                  ABC Phonics Safari (26 letters with cheerful audio), Leo’s Read-Along Storybook, and interactive shape puzzles.
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[#F4511E]">
@@ -730,68 +723,62 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
             </div>
 
-            {/* Tool 2: Parent Care Portal */}
+            {/* Tool 2: Multi-Branch Campuses */}
             <div
-              onClick={() => onNavigate('parent-portal')}
-              className="bg-white rounded-3xl p-6 border-3 border-[#5BC85A] shadow-lg hover:-translate-y-2 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div className="space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-green-100 text-3xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  📱
-                </div>
-                <h3 className="font-heading font-extrabold text-xl text-[#173B5E]">
-                  Parent Care Portal
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                  Real-time timeline activity feed, milestone radar, live GPS van tracking, and direct teacher messaging.
-                </p>
-              </div>
-              <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[#5BC85A]">
-                <span>View Live Feed</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Tool 3: Tuition Fee Estimator */}
-            <div
-              onClick={() => onNavigate('fee-calculator')}
+              onClick={() => onNavigate('campuses')}
               className="bg-white rounded-3xl p-6 border-3 border-[#29B6F6] shadow-lg hover:-translate-y-2 transition-all cursor-pointer group flex flex-col justify-between"
             >
               <div className="space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-blue-100 text-3xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  💰
+                <div className="w-14 h-14 rounded-2xl overflow-hidden bg-blue-100 border border-blue-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <img
+                    src="/lion-1.jpg"
+                    alt="Campuses"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/lion%201.jpg';
+                    }}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="font-heading font-extrabold text-xl text-[#173B5E]">
-                  Tuition Estimator
+                  Our Campuses
                 </h3>
                 <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                  Customize program, organic meals, GPS van routes, and sibling discounts. Generate printable PDF quote.
+                  Explore our verified branch locations, state-of-the-art facilities, safe indoor activity zones, and nearest branch directions.
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[#0288D1]">
-                <span>Calculate Fee</span>
+                <span>Locate Campus</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
 
-            {/* Tool 4: 360 Campus Tour */}
+            {/* Tool 3: Programs & Curriculum */}
             <div
-              onClick={() => onNavigate('virtual-tour')}
-              className="bg-white rounded-3xl p-6 border-3 border-[#F4511E] shadow-lg hover:-translate-y-2 transition-all cursor-pointer group flex flex-col justify-between"
+              onClick={() => onNavigate('programs')}
+              className="bg-white rounded-3xl p-6 border-3 border-[#5BC85A] shadow-lg hover:-translate-y-2 transition-all cursor-pointer group flex flex-col justify-between"
             >
               <div className="space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-orange-100 text-3xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  🧭
+                <div className="w-14 h-14 rounded-2xl overflow-hidden bg-green-100 border border-green-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <img
+                    src="/lion-4.jpg"
+                    alt="Programs"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/lion%204.jpg';
+                    }}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="font-heading font-extrabold text-xl text-[#173B5E]">
-                  360° Virtual Tour
+                  Academic Programs
                 </h3>
                 <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                  Walk through the Montessori Lab, Splash Deck, and Story Den with Leo’s audio guide and glowing hotspots.
+                  Age-tailored curriculums from Playgroup (1.5y) to Senior KG (5.5y) blending sensory discovery, STEAM, and phonics mastery.
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[#F4511E]">
-                <span>Start Walkthrough</span>
+              <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[#2E7D32]">
+                <span>View All Programs</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
@@ -951,48 +938,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* ========================================================================= */}
-      {/* 8. VIDEO SECTION: "COME INSIDE OUR LITTLE WORLD" */}
-      {/* ========================================================================= */}
-      <section id="video-showcase-section" className="py-16 sm:py-24 bg-[#173B5E] text-white relative overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/15 text-[#FFD21F] font-heading font-extrabold text-xs uppercase tracking-wider mb-4 border border-white/20">
-            <Sparkles className="w-3.5 h-3.5 text-[#FFD21F]" />
-            Virtual Tour & Campus Walkthrough
-          </span>
-          <h2 className="font-heading font-black text-3xl sm:text-5xl text-white tracking-tight mb-4">
-            COME INSIDE OUR LITTLE WORLD
-          </h2>
-          <p className="text-white/80 text-base sm:text-lg font-medium max-w-2xl mx-auto mb-10 leading-relaxed">
-            Take a 2-minute video journey through our safe sunlit classrooms, sensory discovery zones, soft-grass playgrounds, and lively rhyme circles.
-          </p>
 
-          {/* Video Container Box */}
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-[#FFD21F] bg-gray-900 aspect-video max-w-4xl mx-auto group">
-            <img
-              src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80"
-              alt="Preschool Classroom Walkthrough Preview"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col items-center justify-center p-6">
-              <button
-                id="play-campus-video-btn"
-                onClick={() => setIsVideoModalOpen(true)}
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#F4511E] text-white flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all border-4 border-white cursor-pointer group-hover:bg-[#FF8A3D]"
-                aria-label="Play School Video Tour"
-              >
-                <Play className="w-8 h-8 sm:w-10 sm:h-10 fill-white ml-1" />
-              </button>
-              <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-white mt-4 drop-shadow">
-                Discover A Kid’s Pre School Campus
-              </h3>
-              <p className="text-xs sm:text-sm text-[#FFD21F] font-bold mt-1">
-                Click to play video tour with Leo 🦁
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ========================================================================= */}
       {/* 9. WHY PARENTS CHOOSE US: 6 Feature Cards */}
@@ -1355,55 +1301,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* Video Modal Walkthrough */}
-      {isVideoModalOpen && (
-        <div
-          id="video-walkthrough-modal"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in"
-          onClick={() => setIsVideoModalOpen(false)}
-        >
-          <div
-            className="relative w-full max-w-4xl bg-black rounded-3xl overflow-hidden border-4 border-[#FFD21F] shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-4 bg-[#173B5E] text-white flex items-center justify-between">
-              <div className="flex items-center gap-2 font-heading font-bold text-sm sm:text-base">
-                <span>🦁 A Kid’s Pre School — Campus Experience & Tour</span>
-              </div>
-              <button
-                onClick={() => setIsVideoModalOpen(false)}
-                className="px-3 py-1 bg-white/20 rounded-lg text-xs font-bold hover:bg-white/30"
-              >
-                Close ✕
-              </button>
-            </div>
 
-            {/* Video Player Display with high quality educational simulation */}
-            <div className="relative aspect-video bg-gray-950 flex flex-col items-center justify-center p-8 text-center text-white">
-              <div className="w-20 h-20 rounded-full bg-[#F4511E] flex items-center justify-center text-3xl mb-4 animate-bounce">
-                🦁
-              </div>
-              <h3 className="font-heading font-extrabold text-2xl text-[#FFD21F] mb-2">
-                &ldquo;Welcome to our colorful world!&rdquo;
-              </h3>
-              <p className="text-sm text-gray-300 max-w-md mb-6 leading-relaxed">
-                Playing school presentation and video walkthrough. Experience the cheerful classrooms, sensory play, and Montessori activities.
-              </p>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => {
-                    setIsVideoModalOpen(false);
-                    onNavigate('book-tour');
-                  }}
-                  className="px-6 py-2.5 rounded-xl bg-[#F4511E] text-white font-heading font-bold text-sm shadow-md hover:bg-[#E64A19]"
-                >
-                  Book A Live In-Person Tour 🦁
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Lightbox for Gallery */}
       {selectedGalleryImage && (

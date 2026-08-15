@@ -171,8 +171,10 @@ export const ContactView: React.FC<ContactViewProps> = ({
                 </div>
                 <div>
                   <h4 className="font-heading font-bold text-base text-[#173B5E]">Admissions Hotline</h4>
-                  <p className="text-sm font-extrabold text-[#F4511E] mt-0.5">+1 (555) 321-KIDS</p>
-                  <p className="text-xs text-gray-500 font-medium mt-1">Mon – Sat: 8:00 AM – 6:00 PM</p>
+                  <p className="text-sm font-extrabold text-[#F4511E] mt-0.5">
+                    +91 9845296096 / +91 9945531032
+                  </p>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Mon – Sat: 8:30 AM – 6:30 PM</p>
                 </div>
               </div>
 
@@ -184,14 +186,14 @@ export const ContactView: React.FC<ContactViewProps> = ({
                 <div>
                   <h4 className="font-heading font-bold text-base text-[#173B5E]">WhatsApp Instant Chat</h4>
                   <a
-                    href="https://wa.me/?text=Hello%20A%20Kid's%20Pre%20School!"
+                    href="https://wa.me/919845296096?text=Hello%20A%20Kid's%20Pre%20School!"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm font-extrabold text-[#2E7D32] hover:underline block mt-0.5"
                   >
-                    +1 (555) 789-ROAR 💬
+                    +91 9845296096 💬
                   </a>
-                  <p className="text-xs text-gray-500 font-medium mt-1">Fast response within 15 minutes</p>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Instant query resolution & brochure</p>
                 </div>
               </div>
 
@@ -201,9 +203,14 @@ export const ContactView: React.FC<ContactViewProps> = ({
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-heading font-bold text-base text-[#173B5E]">Email Admissions</h4>
-                  <p className="text-sm font-extrabold text-[#0288D1] mt-0.5">admissions@akidspreschool.edu</p>
-                  <p className="text-xs text-gray-500 font-medium mt-1">For brochures & official documents</p>
+                  <h4 className="font-heading font-bold text-base text-[#173B5E]">Official Email</h4>
+                  <a
+                    href="mailto:akidspreschool@gmail.com"
+                    className="text-sm font-extrabold text-[#0288D1] hover:underline mt-0.5 block"
+                  >
+                    akidspreschool@gmail.com
+                  </a>
+                  <p className="text-xs text-gray-500 font-medium mt-1">For admissions, prospectus & queries</p>
                 </div>
               </div>
 
@@ -213,18 +220,28 @@ export const ContactView: React.FC<ContactViewProps> = ({
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-heading font-bold text-base text-[#173B5E]">Main Campus Location</h4>
+                  <h4 className="font-heading font-bold text-base text-[#173B5E]">Bengaluru Campus Location</h4>
                   <p className="text-xs sm:text-sm text-gray-700 font-medium mt-0.5 leading-relaxed">
-                    124 Sunshine Boulevard, Wonder District <br />
-                    [INSERT OFFICIAL SCHOOL ADDRESS]
+                    156, Doctor layout, 1st main road, Hosa Rd, Naganathapura, Bengaluru, Karnataka 560100, India
                   </p>
-                  <button
-                    onClick={() => onNavigate('book-tour')}
-                    className="mt-2 text-xs font-bold text-[#F4511E] hover:underline flex items-center gap-1"
-                  >
-                    <span>Schedule In-Person Visit</span>
-                    <span>→</span>
-                  </button>
+                  <div className="mt-2.5 flex items-center gap-3">
+                    <button
+                      onClick={() => onNavigate('campuses')}
+                      className="text-xs font-bold text-[#F4511E] hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>View Interactive Map</span>
+                      <span>→</span>
+                    </button>
+                    <a
+                      href="https://www.google.com/maps/dir//A+Kids+Pre+School,+156,Doctor+layout,+1st+main+road,+Hosa+Rd,+Naganathapura,+Bengaluru,+Karnataka+560100,+India/@12.8155648,80.0423936,14z/data=!4m8!4m7!1m0!1m5!1m1!1s0x3bae6da6cc090bdb:0xa2513b6747b8f30c!2m2!1d77.6668455!2d12.8692084?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-bold text-[#0288D1] hover:underline flex items-center gap-1"
+                    >
+                      <span>Google Maps Directions</span>
+                      <span>↗</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -268,7 +285,7 @@ export const ContactView: React.FC<ContactViewProps> = ({
                       <input
                         type="text"
                         required
-                        placeholder="e.g. Michael Scott"
+                        placeholder="e.g. Priya Sharma"
                         value={formData.parentName}
                         onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
                         className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
@@ -282,7 +299,7 @@ export const ContactView: React.FC<ContactViewProps> = ({
                       <input
                         type="tel"
                         required
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="+91 98452 96096"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
@@ -297,7 +314,7 @@ export const ContactView: React.FC<ContactViewProps> = ({
                       </label>
                       <input
                         type="email"
-                        placeholder="parent@example.com"
+                        placeholder="parent@gmail.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"

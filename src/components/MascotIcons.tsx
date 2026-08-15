@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export interface MascotProps {
   className?: string;
@@ -8,27 +8,53 @@ export interface MascotProps {
 }
 
 // =========================================================================
-// 1. OFFICIAL AKP SCHOOL LOGO (Uses provided "akp logo.jpeg" file)
+// 1. OFFICIAL AKP SCHOOL LOGO (Referencing /public/akp-logo.jpeg)
+// Displays the official school crest with lion badge and crisp text
 // =========================================================================
 export const AKPLogo: React.FC<{
   className?: string;
   size?: number | string;
   showText?: boolean;
 }> = ({ className = '', size = 56, showText = true }) => {
-  const pixelSize = typeof size === 'number' ? `${size}px` : size;
+  const [imgFailed, setImgFailed] = useState(false);
+  const pixelSize = typeof size === 'number' ? size : parseInt(String(size), 10) || 56;
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      <img
-        src="/akp-logo.jpeg"
-        alt="A KID's Pre School Official Logo"
+    <div className={`flex items-center gap-3 select-none ${className}`}>
+      <div
+        className="relative shrink-0 flex items-center justify-center rounded-2xl overflow-hidden shadow-md bg-white border-2 border-[#FFD21F]/80 p-0.5"
         style={{
-          width: pixelSize,
-          height: typeof size === 'number' ? `${size * 1.22}px` : 'auto',
-          objectFit: 'contain',
+          width: `${pixelSize}px`,
+          height: `${pixelSize * 1.15}px`,
+          minWidth: `${pixelSize}px`,
         }}
-        className="shrink-0 drop-shadow-md rounded-xl"
-      />
+      >
+        {!imgFailed ? (
+          <img
+            src="/akp-logo.jpeg"
+            alt="A KID's Pre School Official Logo"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (target.src.includes('akp-logo.jpeg')) {
+                target.src = '/akp%20logo.jpeg';
+              } else {
+                setImgFailed(true);
+              }
+            }}
+            className="w-full h-full object-contain drop-shadow-xs"
+            loading="eager"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-b from-[#173B5E] to-[#0D243B] flex flex-col items-center justify-center p-1 text-center">
+            <span className="text-xl">🦁</span>
+            <span className="text-[7px] font-black text-[#FFD21F] tracking-tighter leading-none mt-0.5 uppercase">
+              AKP
+            </span>
+          </div>
+        )}
+      </div>
+
       {showText && (
         <div className="flex flex-col">
           <div className="flex items-center gap-1.5 leading-tight">
@@ -50,7 +76,7 @@ export const AKPLogo: React.FC<{
 };
 
 // =========================================================================
-// 2. TEACHER LEO (Uses provided "lion 1.jpg" file)
+// 2. TEACHER LEO (Referencing /public/lion-1.jpg)
 // Blue glasses, pointer stick & blackboard
 // =========================================================================
 export const LeoTeacher: React.FC<MascotProps> = ({
@@ -59,29 +85,45 @@ export const LeoTeacher: React.FC<MascotProps> = ({
   animate = true,
   alt = 'Leo the Teacher Lion',
 }) => {
+  const [imgFailed, setImgFailed] = useState(false);
   const pixelSize = typeof size === 'number' ? `${size}px` : size;
+
   return (
     <div
       className={`inline-flex items-center justify-center ${
         animate ? 'hover:scale-105 transition-transform duration-300' : ''
       } ${className}`}
+      style={{ width: pixelSize, height: pixelSize }}
     >
-      <img
-        src="/lion-1.jpg"
-        alt={alt}
-        style={{
-          width: pixelSize,
-          height: pixelSize,
-          objectFit: 'contain',
-        }}
-        className="rounded-2xl drop-shadow-lg"
-      />
+      {!imgFailed ? (
+        <img
+          src="/lion-1.jpg"
+          alt={alt}
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (target.src.includes('lion-1.jpg')) {
+              target.src = '/lion%201.jpg';
+            } else {
+              setImgFailed(true);
+            }
+          }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          className="rounded-2xl drop-shadow-xl"
+          loading="eager"
+        />
+      ) : (
+        <div className="w-full h-full rounded-2xl bg-[#E1F5FE] border-3 border-[#29B6F6] flex flex-col items-center justify-center p-4 text-center">
+          <span className="text-6xl">🦁📚</span>
+          <span className="font-heading font-black text-sm text-[#173B5E] mt-2">Teacher Leo</span>
+        </div>
+      )}
     </div>
   );
 };
 
 // =========================================================================
-// 3. SUPERHERO LEO (Uses provided "lion 2.jpg" file)
+// 3. SUPERHERO LEO (Referencing /public/lion-2.jpg)
 // Red mask, lightning bolt suit & cape
 // =========================================================================
 export const LeoSuper: React.FC<MascotProps> = ({
@@ -90,29 +132,45 @@ export const LeoSuper: React.FC<MascotProps> = ({
   animate = true,
   alt = 'Leo the Superhero Lion',
 }) => {
+  const [imgFailed, setImgFailed] = useState(false);
   const pixelSize = typeof size === 'number' ? `${size}px` : size;
+
   return (
     <div
       className={`inline-flex items-center justify-center ${
         animate ? 'hover:scale-105 transition-transform duration-300' : ''
       } ${className}`}
+      style={{ width: pixelSize, height: pixelSize }}
     >
-      <img
-        src="/lion-2.jpg"
-        alt={alt}
-        style={{
-          width: pixelSize,
-          height: pixelSize,
-          objectFit: 'contain',
-        }}
-        className="rounded-2xl drop-shadow-lg"
-      />
+      {!imgFailed ? (
+        <img
+          src="/lion-2.jpg"
+          alt={alt}
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (target.src.includes('lion-2.jpg')) {
+              target.src = '/lion%202.jpg';
+            } else {
+              setImgFailed(true);
+            }
+          }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          className="rounded-2xl drop-shadow-xl"
+          loading="eager"
+        />
+      ) : (
+        <div className="w-full h-full rounded-2xl bg-[#FFF3E0] border-3 border-[#F4511E] flex flex-col items-center justify-center p-4 text-center">
+          <span className="text-6xl">🦁⚡</span>
+          <span className="font-heading font-black text-sm text-[#173B5E] mt-2">Superhero Leo</span>
+        </div>
+      )}
     </div>
   );
 };
 
 // =========================================================================
-// 4. MUSIC LEO (Uses provided "lion 3.jpg" file)
+// 4. MUSIC LEO (Referencing /public/lion-3.jpg)
 // Golden DJ headphones & musical notes
 // =========================================================================
 export const LeoMusic: React.FC<MascotProps> = ({
@@ -121,29 +179,45 @@ export const LeoMusic: React.FC<MascotProps> = ({
   animate = true,
   alt = 'Leo Music and Dance Lion',
 }) => {
+  const [imgFailed, setImgFailed] = useState(false);
   const pixelSize = typeof size === 'number' ? `${size}px` : size;
+
   return (
     <div
       className={`inline-flex items-center justify-center ${
         animate ? 'hover:scale-105 transition-transform duration-300' : ''
       } ${className}`}
+      style={{ width: pixelSize, height: pixelSize }}
     >
-      <img
-        src="/lion-3.jpg"
-        alt={alt}
-        style={{
-          width: pixelSize,
-          height: pixelSize,
-          objectFit: 'contain',
-        }}
-        className="rounded-2xl drop-shadow-lg"
-      />
+      {!imgFailed ? (
+        <img
+          src="/lion-3.jpg"
+          alt={alt}
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (target.src.includes('lion-3.jpg')) {
+              target.src = '/lion%203.jpg';
+            } else {
+              setImgFailed(true);
+            }
+          }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          className="rounded-2xl drop-shadow-xl"
+          loading="eager"
+        />
+      ) : (
+        <div className="w-full h-full rounded-2xl bg-[#F3E8FF] border-3 border-[#8B5CF6] flex flex-col items-center justify-center p-4 text-center">
+          <span className="text-6xl">🦁🎵</span>
+          <span className="font-heading font-black text-sm text-[#173B5E] mt-2">Music Leo</span>
+        </div>
+      )}
     </div>
   );
 };
 
 // =========================================================================
-// 5. READER / STUDENT LEO (Uses provided "lion 4.jpg" file)
+// 5. READER / STUDENT LEO (Referencing /public/lion-4.jpg)
 // Sitting at desk with blue book, waving
 // =========================================================================
 export const LeoReader: React.FC<MascotProps> = ({
@@ -152,29 +226,45 @@ export const LeoReader: React.FC<MascotProps> = ({
   animate = true,
   alt = 'Leo Student and Reading Lion',
 }) => {
+  const [imgFailed, setImgFailed] = useState(false);
   const pixelSize = typeof size === 'number' ? `${size}px` : size;
+
   return (
     <div
       className={`inline-flex items-center justify-center ${
         animate ? 'hover:scale-105 transition-transform duration-300' : ''
       } ${className}`}
+      style={{ width: pixelSize, height: pixelSize }}
     >
-      <img
-        src="/lion-4.jpg"
-        alt={alt}
-        style={{
-          width: pixelSize,
-          height: pixelSize,
-          objectFit: 'contain',
-        }}
-        className="rounded-2xl drop-shadow-lg"
-      />
+      {!imgFailed ? (
+        <img
+          src="/lion-4.jpg"
+          alt={alt}
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (target.src.includes('lion-4.jpg')) {
+              target.src = '/lion%204.jpg';
+            } else {
+              setImgFailed(true);
+            }
+          }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          className="rounded-2xl drop-shadow-xl"
+          loading="eager"
+        />
+      ) : (
+        <div className="w-full h-full rounded-2xl bg-[#FFFDE7] border-3 border-[#FFD21F] flex flex-col items-center justify-center p-4 text-center">
+          <span className="text-6xl">🦁📖</span>
+          <span className="font-heading font-black text-sm text-[#173B5E] mt-2">Reader Leo</span>
+        </div>
+      )}
     </div>
   );
 };
 
 // =========================================================================
-// 6. ARTIST LEO (Uses provided "lion 5.jpg" file)
+// 6. ARTIST LEO (Referencing /public/lion-5.jpg)
 // Painting on easel with color palette
 // =========================================================================
 export const LeoArtist: React.FC<MascotProps> = ({
@@ -183,29 +273,45 @@ export const LeoArtist: React.FC<MascotProps> = ({
   animate = true,
   alt = 'Leo the Artist Lion',
 }) => {
+  const [imgFailed, setImgFailed] = useState(false);
   const pixelSize = typeof size === 'number' ? `${size}px` : size;
+
   return (
     <div
       className={`inline-flex items-center justify-center ${
         animate ? 'hover:scale-105 transition-transform duration-300' : ''
       } ${className}`}
+      style={{ width: pixelSize, height: pixelSize }}
     >
-      <img
-        src="/lion-5.jpg"
-        alt={alt}
-        style={{
-          width: pixelSize,
-          height: pixelSize,
-          objectFit: 'contain',
-        }}
-        className="rounded-2xl drop-shadow-lg"
-      />
+      {!imgFailed ? (
+        <img
+          src="/lion-5.jpg"
+          alt={alt}
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (target.src.includes('lion-5.jpg')) {
+              target.src = '/lion%205.jpg';
+            } else {
+              setImgFailed(true);
+            }
+          }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          className="rounded-2xl drop-shadow-xl"
+          loading="eager"
+        />
+      ) : (
+        <div className="w-full h-full rounded-2xl bg-[#FCE4EC] border-3 border-[#FF4F6D] flex flex-col items-center justify-center p-4 text-center">
+          <span className="text-6xl">🦁🎨</span>
+          <span className="font-heading font-black text-sm text-[#173B5E] mt-2">Artist Leo</span>
+        </div>
+      )}
     </div>
   );
 };
 
 // =========================================================================
-// 7. MEDITATE / ZEN LEO (Uses provided "lion 6.jpg" file)
+// 7. MEDITATE / ZEN LEO (Referencing /public/lion-6.jpg)
 // Lotus pose, mudra fingers & heart
 // =========================================================================
 export const LeoMeditate: React.FC<MascotProps> = ({
@@ -214,46 +320,81 @@ export const LeoMeditate: React.FC<MascotProps> = ({
   animate = true,
   alt = 'Leo Mindfulness and Yoga Lion',
 }) => {
+  const [imgFailed, setImgFailed] = useState(false);
   const pixelSize = typeof size === 'number' ? `${size}px` : size;
+
   return (
     <div
       className={`inline-flex items-center justify-center ${
         animate ? 'hover:scale-105 transition-transform duration-300' : ''
       } ${className}`}
+      style={{ width: pixelSize, height: pixelSize }}
     >
-      <img
-        src="/lion-6.jpg"
-        alt={alt}
-        style={{
-          width: pixelSize,
-          height: pixelSize,
-          objectFit: 'contain',
-        }}
-        className="rounded-2xl drop-shadow-lg"
-      />
+      {!imgFailed ? (
+        <img
+          src="/lion-6.jpg"
+          alt={alt}
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (target.src.includes('lion-6.jpg')) {
+              target.src = '/lion%206.jpg';
+            } else {
+              setImgFailed(true);
+            }
+          }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          className="rounded-2xl drop-shadow-xl"
+          loading="eager"
+        />
+      ) : (
+        <div className="w-full h-full rounded-2xl bg-[#E8F5E9] border-3 border-[#5BC85A] flex flex-col items-center justify-center p-4 text-center">
+          <span className="text-6xl">🦁🧘</span>
+          <span className="font-heading font-black text-sm text-[#173B5E] mt-2">Zen Leo</span>
+        </div>
+      )}
     </div>
   );
 };
 
 // =========================================================================
-// 8. Leo Mini Avatar / Thumbnail (Uses provided lion 1.jpg)
+// 8. Leo Mini Avatar / Thumbnail (Referencing /public/lion-1.jpg)
 // =========================================================================
 export const LeoAvatar: React.FC<{
   className?: string;
   size?: number;
   alt?: string;
 }> = ({ className = '', size = 36, alt = 'Leo Mascot Avatar' }) => {
-  return (
+  const [imgFailed, setImgFailed] = useState(false);
+
+  return !imgFailed ? (
     <img
       src="/lion-1.jpg"
       alt={alt}
+      referrerPolicy="no-referrer"
+      onError={(e) => {
+        const target = e.currentTarget;
+        if (target.src.includes('lion-1.jpg')) {
+          target.src = '/lion%201.jpg';
+        } else {
+          setImgFailed(true);
+        }
+      }}
       style={{
         width: `${size}px`,
         height: `${size}px`,
         objectFit: 'cover',
       }}
-      className={`rounded-full border border-orange-300 shadow-xs ${className}`}
+      className={`rounded-full border-2 border-orange-300 shadow-xs bg-white ${className}`}
+      loading="eager"
     />
+  ) : (
+    <div
+      style={{ width: `${size}px`, height: `${size}px` }}
+      className={`rounded-full bg-[#FFD21F] border-2 border-orange-300 flex items-center justify-center text-sm shadow-xs ${className}`}
+    >
+      🦁
+    </div>
   );
 };
 

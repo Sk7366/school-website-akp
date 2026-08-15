@@ -14,7 +14,7 @@ export const FloatingSocials: React.FC<FloatingSocialsProps> = () => {
     >
       {/* WhatsApp Quick Connect */}
       <a
-        href="https://wa.me/?text=Hi%20A%20Kid's%20Pre%20School,%20I%20would%20like%20to%20know%20about%20admissions!"
+        href="https://wa.me/919845296096?text=Hi%20A%20Kid's%20Pre%20School,%20I%20would%20like%20to%20know%20about%20admissions!"
         target="_blank"
         rel="noopener noreferrer"
         className="w-10 h-10 rounded-xl bg-[#5BC85A] hover:bg-[#4CAF50] text-white flex items-center justify-center transition-all hover:scale-110 shadow-md group relative"

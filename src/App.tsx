@@ -26,13 +26,9 @@ import { BlogView } from './views/BlogView';
 import { FranchiseView } from './views/FranchiseView';
 import { ContactView } from './views/ContactView';
 import { BookTourView } from './views/BookTourView';
-import { AdminView } from './views/AdminView';
 
 // Interactive Extended Views
 import { KidsZoneView } from './views/KidsZoneView';
-import { ParentPortalView } from './views/ParentPortalView';
-import { FeeCalculatorView } from './views/FeeCalculatorView';
-import { VirtualTourView } from './views/VirtualTourView';
 import { CampusesView } from './views/CampusesView';
 
 export default function App() {
@@ -291,30 +287,26 @@ export default function App() {
       {isLoading && <LoadingScreen onFinishLoading={() => setIsLoading(false)} />}
 
       {/* Top Admissions Announcement Ribbon */}
-      {activeTab !== 'admin' && (
-        <div className="bg-[#173B5E] text-white py-2 px-4 text-center text-xs font-bold border-b border-[#FFD21F]/30 flex items-center justify-center gap-2">
-          <span className="animate-pulse">🦁</span>
-          <span>
-            <strong>Admissions Open for Academic Year 2026–27!</strong> Limited seats across Playgroup, Nursery, & KG batches.
-          </span>
-          <button
-            onClick={() => setIsAdmissionModalOpen(true)}
-            className="underline text-[#FFD21F] hover:text-[#FF8A3D] font-extrabold ml-1 cursor-pointer"
-          >
-            Apply Now →
-          </button>
-        </div>
-      )}
+      <div className="bg-[#173B5E] text-white py-2 px-4 text-center text-xs font-bold border-b border-[#FFD21F]/30 flex items-center justify-center gap-2">
+        <span className="animate-pulse">🦁</span>
+        <span>
+          <strong>Admissions Open for Academic Year 2026–27!</strong> Limited seats across Playgroup, Nursery, & KG batches.
+        </span>
+        <button
+          onClick={() => setIsAdmissionModalOpen(true)}
+          className="underline text-[#FFD21F] hover:text-[#FF8A3D] font-extrabold ml-1 cursor-pointer"
+        >
+          Apply Now →
+        </button>
+      </div>
 
       {/* Main Navbar */}
-      {activeTab !== 'admin' && (
-        <Navbar
-          activeTab={activeTab}
-          onNavigate={handleNavigate}
-          onOpenAdmissionModal={() => setIsAdmissionModalOpen(true)}
-          enquiriesCount={admissionLeads.filter((l) => l.status === 'New').length}
-        />
-      )}
+      <Navbar
+        activeTab={activeTab}
+        onNavigate={handleNavigate}
+        onOpenAdmissionModal={() => setIsAdmissionModalOpen(true)}
+        enquiriesCount={admissionLeads.filter((l) => l.status === 'New').length}
+      />
 
       {/* Main Content Area */}
       <main className="flex-1 w-full">
@@ -421,60 +413,19 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'parent-portal' && (
-          <ParentPortalView
-            onNavigate={handleNavigate}
-            onOpenAdmissionModal={() => setIsAdmissionModalOpen(true)}
-          />
-        )}
-
-        {activeTab === 'fee-calculator' && (
-          <FeeCalculatorView
-            onNavigate={handleNavigate}
-            onOpenAdmissionModal={() => setIsAdmissionModalOpen(true)}
-          />
-        )}
-
-        {activeTab === 'virtual-tour' && (
-          <VirtualTourView
-            onNavigate={handleNavigate}
-            onOpenAdmissionModal={() => setIsAdmissionModalOpen(true)}
-          />
-        )}
-
         {activeTab === 'campuses' && (
           <CampusesView
             onNavigate={handleNavigate}
             onOpenAdmissionModal={() => setIsAdmissionModalOpen(true)}
           />
         )}
-
-        {/* Staff / Director CRM Portal */}
-        {activeTab === 'admin' && (
-          <AdminView
-            onNavigate={handleNavigate}
-            admissionLeads={admissionLeads}
-            tourBookings={tourBookings}
-            franchiseApplications={franchiseApplications}
-            generalEnquiries={generalEnquiries}
-            testimonials={testimonials}
-            onUpdateLeadStatus={handleUpdateLeadStatus}
-            onDeleteLead={handleDeleteLead}
-            onUpdateTourStatus={handleUpdateTourStatus}
-            onDeleteTour={handleDeleteTour}
-            onUpdateFranchiseStatus={handleUpdateFranchiseStatus}
-            onDeleteFranchise={handleDeleteFranchise}
-          />
-        )}
       </main>
 
       {/* Global Footer */}
-      {activeTab !== 'admin' && (
-        <Footer
-          onNavigate={handleNavigate}
-          onOpenAdmissionModal={() => setIsAdmissionModalOpen(true)}
-        />
-      )}
+      <Footer
+        onNavigate={handleNavigate}
+        onOpenAdmissionModal={() => setIsAdmissionModalOpen(true)}
+      />
 
       {/* Global Admission & Prospectus Modal */}
       <AdmissionPopup
@@ -484,20 +435,16 @@ export default function App() {
       />
 
       {/* Floating Action Buttons: WhatsApp / Call & Quick Actions */}
-      {activeTab !== 'admin' && (
-        <FloatingSocials
-          onOpenAdmission={() => setIsAdmissionModalOpen(true)}
-          onBookTour={() => handleNavigate('book-tour')}
-        />
-      )}
+      <FloatingSocials
+        onOpenAdmission={() => setIsAdmissionModalOpen(true)}
+        onBookTour={() => handleNavigate('book-tour')}
+      />
 
       {/* AI Lion Mascot "Ask Leo" Interactive Chatbot */}
-      {activeTab !== 'admin' && (
-        <AskLeoChatbot
-          onOpenAdmission={() => setIsAdmissionModalOpen(true)}
-          onNavigate={handleNavigate}
-        />
-      )}
+      <AskLeoChatbot
+        onOpenAdmission={() => setIsAdmissionModalOpen(true)}
+        onNavigate={handleNavigate}
+      />
     </div>
   );
 }

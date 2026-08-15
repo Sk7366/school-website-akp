@@ -143,7 +143,7 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
         isAiGenerated: true,
         options: [
           { label: '📅 Book In-Person Tour', textPrompt: 'Book a campus tour' },
-          { label: '💰 Calculate Fees', textPrompt: 'Open fee calculator' },
+          { label: '📍 Find Our Campus', textPrompt: 'Where is your campus located?' },
           { label: '💬 Ask Another Question', textPrompt: 'Tell me about the daily routine' },
         ],
       };
@@ -159,10 +159,10 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
       const q = queryText.toLowerCase();
       if (q.includes('fee') || q.includes('cost') || q.includes('tuition')) {
         fallback =
-          "🦁 *Tuition & Fees*: Our all-inclusive tuition covers classroom materials, daily organic meals, and arts/music studios! You can use our Fee Calculator tab or book a tour to receive an itemized quote!";
+          "🦁 *Tuition & Fees*: Our all-inclusive tuition covers classroom learning kits, daily nutritious snacks, and creative arts studios! Please book a campus visit or contact our admissions team for the complete prospectus!";
       } else if (q.includes('tour') || q.includes('visit')) {
         fallback =
-          "🦁 *Campus Tours*: We host morning walkthroughs Monday through Saturday at 10 AM and 3 PM! You'll get to meet Teacher Rachel and see our sensory play lawns.";
+          "🦁 *Campus Tours*: We host morning walkthroughs Monday through Saturday at 10 AM and 3 PM! You'll get to meet our certified teachers and see our joyful classrooms.";
       } else if (q.includes('potty') || q.includes('toilet')) {
         fallback =
           "🦁 *Potty Training*: No stress at all! For Playgroup and early Nursery, our warm caregivers gently assist with scheduled potty breaks and positive reinforcement. We meet every child where they are!";
@@ -173,8 +173,8 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
         sender: 'leo',
         text: fallback,
         options: [
-          { label: '📅 Book a Tour', textPrompt: 'Book a tour' },
-          { label: '💰 Fee Estimator', textPrompt: 'Fee details' },
+          { label: '📅 Book a Campus Tour', textPrompt: 'Book a tour' },
+          { label: '🎒 Explore Programs', textPrompt: 'What programs do you offer?' },
         ],
       };
       setMessages((prev) => [...prev, fallbackMsg]);
@@ -185,13 +185,13 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
   };
 
   const handleOptionClick = (opt: { label: string; textPrompt?: string }) => {
-    if (opt.label.includes('Book In-Person Tour') || opt.label.includes('Book a Campus Tour')) {
+    if (opt.label.includes('Book In-Person Tour') || opt.label.includes('Book a Campus Tour') || opt.label.includes('Book a Tour')) {
       if (onNavigate) onNavigate('book-tour');
       setIsOpen(false);
       return;
     }
-    if (opt.label.includes('Calculate Fees') || opt.label.includes('Fee Estimator')) {
-      if (onNavigate) onNavigate('fee-calculator');
+    if (opt.label.includes('Explore Programs') || opt.label.includes('View Programs')) {
+      if (onNavigate) onNavigate('programs');
       setIsOpen(false);
       return;
     }
@@ -241,10 +241,14 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
               <img
                 src="/lion-1.jpg"
                 alt="Ask Leo AI"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/lion%201.jpg';
+                }}
                 className="w-12 h-12 rounded-full object-cover shadow-sm"
               />
-              <span className="absolute 1 top-0 right-0 w-4 h-4 rounded-full bg-[#5BC85A] border-2 border-white animate-ping"></span>
-              <span className="absolute 1 top-0 right-0 w-4 h-4 rounded-full bg-[#5BC85A] border-2 border-white"></span>
+              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-[#5BC85A] border-2 border-white animate-ping"></span>
+              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-[#5BC85A] border-2 border-white"></span>
             </div>
           )}
         </button>
@@ -254,7 +258,7 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
       {isOpen && (
         <div
           id="ask-leo-chatbox"
-          className="fixed bottom-24 right-4 sm:right-6 z-50 w-[94vw] sm:w-[410px] h-[580px] max-h-[85vh] bg-[#FFF9EC] rounded-3xl shadow-2xl border-4 border-[#FFD21F] flex flex-col overflow-hidden animate-fade-in"
+          className="fixed bottom-24 right-4 sm:right-6 z-[60] w-[94vw] sm:w-[410px] h-[580px] max-h-[85vh] bg-[#FFF9EC] rounded-3xl shadow-2xl border-4 border-[#FFD21F] flex flex-col overflow-hidden animate-fade-in"
         >
           {/* Deep Navy Header with AI Mascot badge & Voice toggle */}
           <div className="bg-[#173B5E] px-4 py-3 text-white flex items-center justify-between shadow-md relative z-10">
@@ -263,6 +267,10 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
                 <img
                   src="/lion-1.jpg"
                   alt="Leo Mascot"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = '/lion%201.jpg';
+                  }}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -330,7 +338,14 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
                 {msg.sender === 'leo' ? (
                   <div className="flex items-start gap-2 max-w-[92%]">
                     <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shrink-0 border-2 border-[#F4511E] overflow-hidden mt-0.5 shadow-xs">
-                      <img src="/lion-1.jpg" alt="Leo" className="w-full h-full object-cover" />
+                      <img
+                        src="/lion-1.jpg"
+                        alt="Leo"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = '/lion%201.jpg';
+                        }}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <div className="p-3.5 rounded-2xl rounded-tl-none bg-white text-[#173B5E] text-xs sm:text-[13px] font-medium shadow-sm border border-orange-100 whitespace-pre-line leading-relaxed">
                       {msg.text}
@@ -368,7 +383,14 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
             {isTyping && (
               <div className="flex items-center gap-2 ml-2">
                 <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center overflow-hidden border border-orange-200 shrink-0">
-                  <img src="/lion-1.jpg" alt="Leo" className="w-full h-full object-cover" />
+                  <img
+                    src="/lion-1.jpg"
+                    alt="Leo"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/lion%201.jpg';
+                    }}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="px-3.5 py-2 rounded-2xl bg-white text-xs font-semibold text-[#173B5E] border border-orange-100 flex items-center gap-1.5 shadow-xs">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#F4511E] animate-bounce"></span>

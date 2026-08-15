@@ -11,12 +11,8 @@ export type PageTab =
   | 'franchise'
   | 'contact'
   | 'book-tour'
-  | 'parent-portal'
-  | 'fee-calculator'
-  | 'virtual-tour'
   | 'kids-zone'
-  | 'campuses'
-  | 'admin';
+  | 'campuses';
 
 export type LeadStatus =
   | 'NEW'

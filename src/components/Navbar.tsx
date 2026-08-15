@@ -54,27 +54,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       badge: 'Interactive',
     },
     {
-      label: '📱 Parent Care Portal',
-      tab: 'parent-portal',
-      desc: 'Daily timeline feed & Live GPS van tracker',
-      icon: Baby,
-      badge: 'Live',
-    },
-    {
-      label: '💰 Tuition Fee Estimator',
-      tab: 'fee-calculator',
-      desc: 'Itemized fee calculator with PDF quote',
-      icon: Calculator,
-      badge: 'Instant',
-    },
-    {
-      label: '🧭 360° Virtual Walkthrough',
-      tab: 'virtual-tour',
-      desc: 'Explore classrooms with Leo audio guide',
-      icon: Compass,
-      badge: '360°',
-    },
-    {
       label: '📍 Multi-Branch Campuses',
       tab: 'campuses',
       desc: 'Compare branches & check nearest campus',
@@ -97,47 +76,28 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-2 font-semibold">
             <span className="inline-block w-2 h-2 rounded-full bg-[#FFD21F] animate-ping" />
             <span className="text-[#FFD21F] font-bold">Admissions Open 2026–27:</span>
-            <span className="hidden sm:inline text-white/90">Playgroup, Nursery, Junior & Senior KG, Day Care</span>
+            <span className="text-white/90">Playgroup, Nursery, Junior & Senior KG, Day Care</span>
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4 text-xs">
             {/* Quick Link Pills in top bar */}
             <button
               onClick={() => handleNavClick('kids-zone')}
-              className="hidden md:flex items-center gap-1 text-[#FFD21F] hover:underline font-bold"
+              className="flex items-center gap-1 text-[#FFD21F] hover:underline font-bold"
             >
               <span>🦁 Kids Zone</span>
             </button>
             <button
-              onClick={() => handleNavClick('parent-portal')}
-              className="hidden md:flex items-center gap-1 text-white/90 hover:text-white font-medium"
+              onClick={() => handleNavClick('campuses')}
+              className="hidden sm:flex items-center gap-1 text-white/90 hover:text-white font-medium"
             >
-              <span>📱 Parent Portal</span>
+              <span>📍 Find Campus</span>
             </button>
             <button
-              onClick={() => handleNavClick('fee-calculator')}
+              onClick={() => handleNavClick('book-tour')}
               className="hidden md:flex items-center gap-1 text-white/90 hover:text-white font-medium"
             >
-              <span>💰 Fee Calculator</span>
-            </button>
-
-            <span className="hidden xl:inline text-white/40">|</span>
-
-            <button
-              onClick={() => handleNavClick('admin')}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
-                activeTab === 'admin'
-                  ? 'bg-[#F4511E] text-white'
-                  : 'bg-white/15 text-[#FFD21F] hover:bg-white/25'
-              }`}
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Admin</span>
-              {enquiriesCount > 0 && (
-                <span className="ml-1 px-1.5 py-0.2 rounded-full bg-[#F4511E] text-white text-[9px] font-extrabold">
-                  {enquiriesCount}
-                </span>
-              )}
+              <span>📅 Book Visit</span>
             </button>
           </div>
         </div>
@@ -179,9 +139,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={() => setInteractiveDropdownOpen(!interactiveDropdownOpen)}
                 className={`px-3 py-2 rounded-xl text-xs xl:text-sm font-extrabold tracking-wide flex items-center gap-1 transition-all cursor-pointer ${
-                  ['kids-zone', 'parent-portal', 'fee-calculator', 'virtual-tour', 'campuses'].includes(
-                    activeTab
-                  )
+                  ['kids-zone', 'campuses'].includes(activeTab)
                     ? 'text-[#F4511E] bg-[#FFF3E0] ring-1 ring-orange-200'
                     : 'text-[#173B5E] hover:text-[#F4511E] hover:bg-orange-50/60'
                 }`}

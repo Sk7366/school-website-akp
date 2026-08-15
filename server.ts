@@ -27,6 +27,8 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(express.json());
+  // Serve static assets from public
+  app.use(express.static(path.join(process.cwd(), "public")));
 
   // Health Check
   app.get("/api/health", (req, res) => {
@@ -55,7 +57,7 @@ async function startServer() {
             `🦁 *Roar!* Hi there! I'm Leo, your friendly mascot at A Kid's Pre School! ` +
             `For a child around ${childAge || "2–4 years"} in ${program || "our early childhood programs"}, ` +
             `our Montessori + Play-Way curriculum focuses on sensory discovery, joyful phonics, and warm social bonding. ` +
-            `We have admissions open for the 2026–27 academic year with limited seats! Would you like to schedule a free campus tour or calculate your fee estimate?`,
+            `Our campus is at 156, Doctor layout, Hosa Rd, Naganathapura, Bengaluru. Admissions are open for 2026–27! Would you like to schedule a campus tour or check our location?`,
           isFallback: true,
         });
       }
@@ -66,17 +68,17 @@ Your tone is deeply caring, playful, reassuring to anxious parents, and encourag
 
 School Key Facts:
 - School Name: A Kid's Pre School
+- Campus Location: 156, Doctor layout, 1st main road, Hosa Rd, Naganathapura, Bengaluru, Karnataka 560100, India (near Hosa Road Junction / Electronic City corridor)
 - Core Philosophy: Joyful Montessori + Play-Way methodology, sensory integration, emotional intelligence.
 - Programs: 
   1. Playgroup (1.5 - 2.5 yrs): Sensory messy play, gentle separation, rhythm (9:00 AM - 11:30 AM)
   2. Nursery (2.5 - 3.5 yrs): Phonics, pattern recognition, puppet storytelling (8:30 AM - 12:00 PM)
   3. Junior KG (LKG, 3.5 - 4.5 yrs): STEM inquiry, early math 1-50, writing readiness (8:30 AM - 12:30 PM)
   4. Senior KG (UKG, 4.5 - 5.5 yrs): Independent reading, grade school confidence (8:30 AM - 1:30 PM)
-  5. Daycare & Extended Care (1.5 - 8 yrs): Organic hot chef meals, quiet nap suites, homework aid, open 8:00 AM - 6:30 PM
-- Campuses: 4 campuses (Sunshine Main Campus, Green Valley Nature Campus, Silicon Meadows STEM Hub, Wonder Heights Arts Campus).
+  5. Daycare & Extended Care (1.5 - 8 yrs): Organic hot meals, quiet nap suites, homework aid, open 8:00 AM - 6:30 PM
 - Admissions: Open for Academic Year 2026-27 with instant VIP tour passes and trial classes.
-- Safety: CCTV live parent streaming, 100% background-verified staff, child-safe rounded furniture, pediatrician on-call, GPS live school vans.
-- Meal Plan: 100% organic, dietitian-crafted hot breakfast, lunch, and fruit evening snacks.
+- Facilities & Safety: 100% CCTV surveillance, child-safe rubberized play areas, Montessori sensory labs, GPS-tracked air-conditioned school van pickup across Hosa Road, Electronic City, Singasandra, Kudlu Gate, and Kasavanahalli.
+- Meal Plan: 100% hygienic, dietitian-crafted nutritious meals & snack routines.
 
 Context provided by the parent:
 Child Age: ${childAge || "Not specified"}
@@ -84,9 +86,9 @@ Interested Program: ${program || "General"}
 
 Guidelines for your response:
 1. Greet the parent warmly as Leo the Lion.
-2. Give actionable, compassionate preschool guidance (answering their specific question about curriculum, fees, potty training, separation anxiety, daily meals, or admissions).
+2. Give actionable, compassionate preschool guidance (answering their specific question about curriculum, admissions, potty training, separation anxiety, daily meals, or directions to our Bengaluru campus).
 3. Keep answers concise, highly readable, formatting with bullet points when listing tips.
-4. Conclude with a helpful call-to-action (e.g. inviting them to book a campus tour, try the fee calculator, or chat with a teacher in the Parent Portal).
+4. Conclude with a helpful call-to-action (e.g. inviting them to book a campus tour or explore our programs).
 `.trim();
 
       // Format chat messages
