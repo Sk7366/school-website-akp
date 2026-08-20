@@ -74,7 +74,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="bg-[#173B5E] text-white text-[11px] sm:text-xs py-1.5 px-4 flex items-center justify-between">
         <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-between">
           <div className="flex items-center gap-2 font-semibold">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#FFD21F] animate-ping" />
             <span className="text-[#FFD21F] font-bold">Admissions Open 2026–27:</span>
             <span className="text-white/90">Playgroup, Nursery, Junior & Senior KG, Day Care</span>
           </div>

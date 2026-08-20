@@ -247,7 +247,6 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
                 }}
                 className="w-12 h-12 rounded-full object-cover shadow-sm"
               />
-              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-[#5BC85A] border-2 border-white animate-ping"></span>
               <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-[#5BC85A] border-2 border-white"></span>
             </div>
           )}
@@ -393,9 +392,9 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
                   />
                 </div>
                 <div className="px-3.5 py-2 rounded-2xl bg-white text-xs font-semibold text-[#173B5E] border border-orange-100 flex items-center gap-1.5 shadow-xs">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#F4511E] animate-bounce"></span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#FFD21F] animate-bounce [animation-delay:0.2s]"></span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#29B6F6] animate-bounce [animation-delay:0.4s]"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#F4511E]"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FFD21F]"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#29B6F6]"></span>
                   <span className="text-[11px] text-gray-500 ml-1">Leo is thinking...</span>
                 </div>
               </div>

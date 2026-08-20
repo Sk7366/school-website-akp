@@ -160,7 +160,7 @@ export const InteractiveLeo: React.FC<InteractiveLeoProps> = ({
           {/* Header Row */}
           <div className="flex items-center justify-between border-b border-orange-200/80 pb-2 mb-2.5">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#F4511E] animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-[#F4511E]" />
               <span className="font-heading font-extrabold text-xs tracking-wider uppercase text-[#F4511E] flex items-center gap-1">
                 LEO SAYS:
               </span>
@@ -331,7 +331,7 @@ export const InteractiveLeo: React.FC<InteractiveLeoProps> = ({
         {/* Click Me Cue Pill badge on hover */}
         {interactive && !isBubbleOpen && (
           <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#F4511E] text-white text-[10px] sm:text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md border-2 border-white flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FFD21F] animate-ping" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FFD21F]" />
             <span>Click Leo!</span>
           </div>
         )}

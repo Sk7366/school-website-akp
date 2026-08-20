@@ -288,7 +288,7 @@ export default function App() {
 
       {/* Top Admissions Announcement Ribbon */}
       <div className="bg-[#173B5E] text-white py-2 px-4 text-center text-xs font-bold border-b border-[#FFD21F]/30 flex items-center justify-center gap-2">
-        <span className="animate-pulse">🦁</span>
+        <span>🦁</span>
         <span>
           <strong>Admissions Open for Academic Year 2026–27!</strong> Limited seats across Playgroup, Nursery, & KG batches.
         </span>

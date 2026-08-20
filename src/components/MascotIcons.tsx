@@ -66,7 +66,7 @@ export const AKPLogo: React.FC<{
             </span>
           </div>
           <span className="text-[11px] font-bold text-[#FF8A3D] tracking-wider uppercase flex items-center gap-1">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#FFD21F] animate-pulse"></span>
+            <span className="inline-block w-2 h-2 rounded-full bg-[#FFD21F]"></span>
             Where Little Minds Roar &amp; Grow
           </span>
         </div>

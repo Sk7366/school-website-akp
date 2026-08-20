@@ -22,27 +22,7 @@ import {
   GALLERY_ITEMS,
 } from '../data/preschoolData';
 import { PageTab } from '../types';
-import {
-  Calendar,
-  Sparkles,
-  ArrowRight,
-  Play,
-  CheckCircle2,
-  Shield,
-  Heart,
-  Users,
-  Award,
-  BookOpen,
-  Compass,
-  Palette,
-  Music,
-  ChevronLeft,
-  ChevronRight,
-  Star,
-  Quote,
-  Clock,
-  Eye,
-} from 'lucide-react';
+import { Calendar, Sparkles, ArrowRight, Play, CircleCheck as CheckCircle2, Shield, Heart, Users, Award, BookOpen, Compass, Palette, Music, ChevronLeft, ChevronRight, Star, Quote, Clock, Eye } from 'lucide-react';
 
 interface HomeViewProps {
   onNavigate: (tab: PageTab) => void;
@@ -182,7 +162,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               {/* Admissions Open Capsule */}
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border-2 border-[#FFD21F]/40 shadow-sm">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#5BC85A] animate-ping" />
                 <span className="font-heading font-extrabold text-xs sm:text-sm text-[#FFD21F] uppercase tracking-wider">
                   🦁 Admissions Open for 2026–27 Academic Year
                 </span>

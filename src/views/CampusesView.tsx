@@ -1,28 +1,7 @@
 import React, { useState } from 'react';
 import { PageTab } from '../types';
 import { CAMPUSES_DATA } from '../data/preschoolExtendedData';
-import {
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
-  CheckCircle2,
-  Calendar,
-  Sparkles,
-  Navigation,
-  Copy,
-  Check,
-  Building,
-  Bus,
-  ShieldCheck,
-  Compass,
-  ArrowRight,
-  ExternalLink,
-  MessageCircle,
-  Car,
-  Heart,
-  Baby,
-} from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, CircleCheck as CheckCircle2, Calendar, Sparkles, Navigation, Copy, Check, Building, Bus, ShieldCheck, Compass, ArrowRight, ExternalLink, MessageCircle, Car, Heart, Baby } from 'lucide-react';
 
 interface CampusesViewProps {
   onNavigate: (tab: PageTab) => void;
@@ -138,8 +117,8 @@ export const CampusesView: React.FC<CampusesViewProps> = ({
 
                 {/* Floating Quick Pill over Map */}
                 <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-orange-200 shadow-md flex items-center gap-2 pointer-events-none text-xs font-bold text-[#173B5E]">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#5BC85A] animate-pulse"></span>
-                  <span>A Kid’s Pre School • Bengaluru</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#5BC85A]"></span>
+                  <span>A Kid's Pre School • Bengaluru</span>
                 </div>
               </div>
 
