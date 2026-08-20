@@ -210,49 +210,46 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
     }
   }, [config.imageSrc, displayedSrc]);
 
-  // Speech bubble visibility management
-  const [isBubbleVisible, setIsBubbleVisible] = useState(
-    state === 'welcome' || celebrating || !!message
-  );
-  const [isUserInteracting, setIsUserInteracting] = useState(false);
+  // Speech bubble visibility management — hidden by default, show on hover
+  const [isBubbleVisible, setIsBubbleVisible] = useState(celebrating);
   const [isHovered, setIsHovered] = useState(false);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-dismiss welcome introduction bubble if requested
+  // Show celebration bubble when celebrating prop is true
   useEffect(() => {
-    if (autoDismissIntro && (state === 'welcome' || state === 'idle') && !isUserInteracting && !celebrating) {
-      const timer = setTimeout(() => {
-        setIsBubbleVisible(false);
-      }, introDurationMs);
-      return () => clearTimeout(timer);
-    }
-  }, [autoDismissIntro, state, isUserInteracting, celebrating, introDurationMs]);
-
-  // Update bubble visibility when state or celebration changes
-  useEffect(() => {
-    if (celebrating || state === 'welcome') {
+    if (celebrating) {
       setIsBubbleVisible(true);
     }
-  }, [celebrating, state]);
+  }, [celebrating]);
 
-  // Click outside listener to close the bubble when opened interactively
-  useEffect(() => {
-    if (!isBubbleVisible || celebrating) return;
+  const clearHideTimer = () => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+  };
 
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsBubbleVisible(false);
-        setIsUserInteracting(false);
-      }
-    };
+  const handleMouseEnter = () => {
+    if (!interactive || celebrating) return;
+    clearHideTimer();
+    setIsHovered(true);
+    setIsBubbleVisible(true);
+  };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isBubbleVisible, celebrating]);
+  const handleMouseLeave = () => {
+    if (!interactive || celebrating) return;
+    setIsHovered(false);
+    clearHideTimer();
+    hideTimerRef.current = setTimeout(() => {
+      setIsBubbleVisible(false);
+    }, 200);
+  };
 
+  // For mobile: tap to toggle
   const handleCharacterClick = () => {
-    if (!interactive) return;
-    setIsUserInteracting(true);
+    if (!interactive || celebrating) return;
+    clearHideTimer();
     setIsBubbleVisible((prev) => !prev);
   };
 
@@ -279,12 +276,8 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
     }
   };
 
-  const activeMessage = isUserInteracting
-    ? 'Hi! What would you like to explore?'
-    : celebrationMessage || message || config.defaultMessage;
-  const activeSubMessage = isUserInteracting
-    ? 'Choose an adventure below or chat with me!'
-    : subMessage || config.defaultSubMessage;
+  const activeMessage = celebrationMessage || message || config.defaultMessage;
+  const activeSubMessage = subMessage || config.defaultSubMessage;
 
   return (
     <div
@@ -296,6 +289,8 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
       {/* ----------------------------------------------------------------- */}
       {isBubbleVisible && (
         <div
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           className={`absolute z-50 animate-leo-bubble w-[290px] sm:w-[320px] max-w-[calc(100vw-32px)] bg-[#FFF8EE] border-3 border-[#F4511E] rounded-2xl p-4 shadow-2xl text-left pointer-events-auto ${
             bubblePlacement === 'left'
               ? 'right-full mr-4 bottom-8'
@@ -324,7 +319,7 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
           {/* Bubble Header */}
           <div className="flex items-center justify-between border-b border-orange-200/90 pb-2 mb-2.5">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#F4511E] animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-[#F4511E]" />
               <span className="font-heading font-black text-xs tracking-wider uppercase text-[#F4511E]">
                 LEO SAYS:
               </span>
@@ -411,7 +406,7 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
       {!isBubbleVisible && isHovered && interactive && (
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap bg-[#183B56] text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-lg border border-[#FFC928] flex items-center gap-1.5 animate-leo-bubble">
           <span>🦁</span>
-          <span>Click Leo to explore!</span>
+          <span>Hover or tap to explore!</span>
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#183B56] border-b border-r border-[#FFC928] transform rotate-45" />
         </div>
       )}
@@ -421,8 +416,8 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
       {/* ----------------------------------------------------------------- */}
       <div
         onClick={handleCharacterClick}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         className={`${config.motionClass} relative transition-all duration-300 transform-gpu cursor-pointer group flex items-center justify-center ${
           isHovered ? 'scale-105 -translate-y-1 drop-shadow-2xl' : 'drop-shadow-lg'
         }`}
@@ -483,7 +478,7 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
         {/* Interactive Cue Badge on hover */}
         {interactive && !isBubbleVisible && (
           <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#F4511E] text-white text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md border-2 border-white flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FFD21F] animate-ping" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FFD21F]" />
             <span>Chat with Leo</span>
           </div>
         )}
