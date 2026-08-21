@@ -1,0 +1,208 @@
+export type GalleryMediaType = 'photo' | 'video';
+export type GalleryCategory = 'Celebrations' | 'Activities';
+
+export interface GalleryItem {
+  id: string;
+  type: GalleryMediaType;
+  category: GalleryCategory;
+  title: string;
+  desc: string;
+  src: string;
+  /** Tailwind classes controlling card span in the masonry grid */
+  size: 'small' | 'medium' | 'large' | 'wide' | 'tall';
+}
+
+export const GALLERY_ITEMS: GalleryItem[] = [
+  // ── CELEBRATIONS ──────────────────────────────────────────────
+  {
+    id: 'cel-yoga',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Yoga Day Celebration',
+    desc: 'Little ones stretching, breathing, and finding their calm on Yoga Day.',
+    src: '/gallery/Photos/yoga_3.jpeg',
+    size: 'medium',
+  },
+  {
+    id: 'cel-blue-color',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Blue Colour Day',
+    desc: 'A sea of blue as children celebrate their favourite colour in style.',
+    src: '/gallery/Photos/Blue_colour_day_3_.jpeg',
+    size: 'wide',
+  },
+  {
+    id: 'cel-green-color',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Green Colour Day',
+    desc: 'Nature-inspired fun as our preschoolers explore everything green.',
+    src: '/gallery/Photos/green.jpeg',
+    size: 'small',
+  },
+  {
+    id: 'cel-color-activity',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Colour Activity',
+    desc: 'Vibrant hues and joyful faces during our special colour activity day.',
+    src: '/gallery/Photos/Colour_activity.jpeg',
+    size: 'small',
+  },
+  {
+    id: 'cel-first-day',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'First Day at School',
+    desc: 'Nervous smiles, new friends, and the beginning of a beautiful journey.',
+    src: '/gallery/Photos/First_day_at_school.jpeg',
+    size: 'medium',
+  },
+  {
+    id: 'cel-friendship-1',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Happy Friendship Day',
+    desc: 'Sharing laughter and friendship bands with new best friends.',
+    src: '/gallery/Photos/friendhip_day_3.jpeg',
+    size: 'small',
+  },
+  {
+    id: 'cel-friendship-2',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Happy Friendship Day',
+    desc: 'Celebrating the bonds that make preschool so special.',
+    src: '/gallery/Photos/friendship_5.jpeg',
+    size: 'tall',
+  },
+  {
+    id: 'cel-guru-purnima-1',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Guru Purnima Celebration',
+    desc: 'Honouring teachers and guides with love and gratitude on Guru Purnima.',
+    src: '/gallery/Photos/guru_purnima_2.jpeg',
+    size: 'small',
+  },
+  {
+    id: 'cel-guru-purnima-2',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Guru Purnima Celebration',
+    desc: 'A heart-warming tribute to the gurus who shape little minds.',
+    src: '/gallery/Photos/guru_purnima_3.jpeg',
+    size: 'medium',
+  },
+  {
+    id: 'cel-rainy-1',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Rainy Day Celebration',
+    desc: 'Splashing through puddles and dancing in the monsoon rain.',
+    src: '/gallery/Photos/rainy_day_4.jpeg',
+    size: 'wide',
+  },
+  {
+    id: 'cel-rainy-2',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Rainy Day Celebration',
+    desc: 'Raincoats, umbrellas, and big smiles on a wet and wonderful day.',
+    src: '/gallery/Photos/Rainy_day_activity.jpeg',
+    size: 'small',
+  },
+  {
+    id: 'cel-rainy-3',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Rainy Day Celebration',
+    desc: 'Monsoon magic as children enjoy rainy-day crafts and activities.',
+    src: '/gallery/Photos/Rainy_day_activity_3.jpeg',
+    size: 'small',
+  },
+  {
+    id: 'cel-rainy-4',
+    type: 'photo',
+    category: 'Celebrations',
+    title: 'Rainy Day Celebration',
+    desc: 'Creative rainy-day fun with colourful umbrellas and paper boats.',
+    src: '/gallery/Photos/rainy_day_activity_2.jpeg',
+    size: 'medium',
+  },
+  {
+    id: 'cel-rainy-video',
+    type: 'video',
+    category: 'Celebrations',
+    title: 'Rainy Day Celebration',
+    desc: 'Watch our little ones celebrate the magic of the monsoon season.',
+    src: '/gallery/Videos/Rainy_day_celebration.mp4',
+    size: 'wide',
+  },
+
+  // ── ACTIVITIES ────────────────────────────────────────────────
+  {
+    id: 'act-circle-day',
+    type: 'video',
+    category: 'Activities',
+    title: 'Circle Day Activity',
+    desc: 'Learning about circles through hands-on shapes and play.',
+    src: '/gallery/Videos/circle_day_activity.mp4',
+    size: 'medium',
+  },
+  {
+    id: 'act-fun-games',
+    type: 'video',
+    category: 'Activities',
+    title: 'Fun Games',
+    desc: 'Exciting games that build teamwork, motor skills, and giggles.',
+    src: '/gallery/Videos/Fun_Games_Activity_2.mp4',
+    size: 'wide',
+  },
+  {
+    id: 'act-identify-alpha-1',
+    type: 'video',
+    category: 'Activities',
+    title: 'Identifying Alphabets',
+    desc: 'Our preschoolers match and identify alphabets with confidence.',
+    src: '/gallery/Videos/Identify_the_Alphabet_2.mp4',
+    size: 'small',
+  },
+  {
+    id: 'act-identify-alpha-2',
+    type: 'video',
+    category: 'Activities',
+    title: 'Identifying Alphabets',
+    desc: 'Letter recognition fun through interactive alphabet activities.',
+    src: '/gallery/Videos/identify_the_alphabets_activity_2.mp4',
+    size: 'small',
+  },
+  {
+    id: 'act-match-alpha',
+    type: 'video',
+    category: 'Activities',
+    title: 'Match the Alphabets',
+    desc: 'Matching upper and lower case letters through playful learning.',
+    src: '/gallery/Videos/Match_the_alphabets_activity_.mp4',
+    size: 'medium',
+  },
+  {
+    id: 'act-learning-size',
+    type: 'video',
+    category: 'Activities',
+    title: 'Big and Small – Learning Sizes',
+    desc: 'Comparing big and small objects to understand relative sizes.',
+    src: '/gallery/Videos/Learning_about_size_activity.mp4',
+    size: 'tall',
+  },
+  {
+    id: 'act-pre-math',
+    type: 'video',
+    category: 'Activities',
+    title: 'Pre-Math Concepts',
+    desc: 'Building early math foundations with sorting and counting fun.',
+    src: '/gallery/Videos/Pre_Math_Concept_Activity_.mp4',
+    size: 'medium',
+  },
+];
