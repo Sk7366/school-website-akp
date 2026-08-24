@@ -1,0 +1,6 @@
+{
+  "name": "A Kid’s Pre School",
+  "description": "A premium, playful preschool website with an interactive AI Lion Mascot, rich educational storytelling, admissions, and virtual tour booking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
