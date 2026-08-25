@@ -26,6 +26,7 @@ import {
   Heart,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { WhatsAppConfirmPopup } from '../components/WhatsAppConfirmPopup';
 
 interface BookTourViewProps {
   onNavigate: (tab: PageTab) => void;
@@ -55,6 +56,8 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
   const [message, setMessage] = useState('');
 
   const [confirmedBookingId, setConfirmedBookingId] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const timeSlots = [
     { time: '10:00 AM – Morning Circle Tour', label: 'Recommended: Watch Live Circle Time & Rhymes' },
@@ -87,6 +90,52 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
       message,
     });
 
+    setShowConfirm(true);
+  };
+
+  const sendWhatsAppMessage = async () => {
+    const lines = [
+      '*New Campus Tour Booking - A Kids Pre School*',
+      '',
+      `*Name:* ${parentName}`,
+      `*Phone:* ${phone}`,
+      `*Email:* ${email || 'N/A'}`,
+      `*Child Name:* ${childName || 'Little Explorer'}`,
+      `*Child Age:* ${childAge}`,
+      `*Program:* ${program}`,
+      `*Preferred Date:* ${selectedDate}`,
+      `*Preferred Time:* ${selectedTimeSlot}`,
+      message ? `*Message:* ${message}` : '',
+    ].filter(Boolean).join('\n');
+
+    try {
+      const response = await fetch('/api/send-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: lines,
+          type: 'tour',
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.url) {
+        window.open(result.url, '_blank');
+      }
+    } catch (error) {
+      console.error('WhatsApp send error:', error);
+      const encoded = encodeURIComponent(lines);
+      window.open(`https://wa.me/919945531032?text=${encoded}`, '_blank');
+    }
+  };
+
+  const handleConfirmSend = async () => {
+    setIsSending(true);
+    await sendWhatsAppMessage();
+    setIsSending(false);
+    setShowConfirm(false);
+
     setStep(3);
     try {
       confetti({
@@ -98,6 +147,18 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
     } catch {
       // safe fallback
     }
+  };
+
+  const formData = {
+    parentName,
+    phone,
+    email,
+    childName: childName || 'Little Explorer',
+    childAge,
+    program,
+    preferredDate: selectedDate,
+    preferredTime: selectedTimeSlot,
+    message,
   };
 
   return (
@@ -179,7 +240,7 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
                       Step 1 of 3
                     </span>
                     <h2 className="font-heading font-black text-2xl sm:text-3xl text-[#173B5E]">
-                      CHOOSE YOUR TOUR DATE &amp; TIME
+                      CHOOSE YOUR TOUR DATE & TIME
                     </h2>
                     <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1 max-w-md">
                       Select a morning or afternoon slot when classes are in active joyful session.
@@ -313,7 +374,7 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold text-[#173B5E] mb-1">
-                      Child’s Name
+                      Child's Name
                     </label>
                     <input
                       type="text"
@@ -328,7 +389,7 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-[#173B5E] mb-1">
-                      Child’s Current Age
+                      Child's Current Age
                     </label>
                     <input
                       type="text"
@@ -411,7 +472,7 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
                     Tour Confirmed!
                   </span>
                   <h2 className="font-heading font-black text-3xl sm:text-4xl text-[#173B5E] mt-2">
-                    WE CAN&apos;T WAIT TO MEET YOU! 🦁
+                    WE CAN'T WAIT TO MEET YOU! 🦁
                   </h2>
                   <p className="text-sm text-gray-700 font-medium mt-1">
                     A confirmation SMS & WhatsApp message has been dispatched to <strong>{phone}</strong>.
@@ -424,7 +485,7 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
                     <div className="flex items-center gap-2">
                       <AKPLogo size={36} showText={false} />
                       <div>
-                        <div className="font-heading font-black text-xs text-[#173B5E]">A KID’S PRE SCHOOL</div>
+                        <div className="font-heading font-black text-xs text-[#173B5E]">A KID'S PRE SCHOOL</div>
                         <div className="text-[10px] text-gray-500">Official VIP Visitor Pass</div>
                       </div>
                     </div>
@@ -532,6 +593,16 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
           </div>
         </div>
       </section>
+
+      {/* WhatsApp Confirmation Popup */}
+      <WhatsAppConfirmPopup
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={handleConfirmSend}
+        formData={formData}
+        enquiryType="Campus Tour Booking"
+        isSending={isSending}
+      />
     </div>
   );
 };

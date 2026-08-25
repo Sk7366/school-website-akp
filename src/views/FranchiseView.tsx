@@ -7,6 +7,7 @@ import {
   CloudDeco,
   AKPLogo,
 } from '../components/MascotIcons';
+import { LeoCharacter } from '../components/LeoCharacter';
 import { PageTab, FranchiseApplication } from '../types';
 import {
   Award,
@@ -44,6 +45,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { WhatsAppConfirmPopup } from '../components/WhatsAppConfirmPopup';
 
 interface FranchiseViewProps {
   onNavigate: (tab: PageTab) => void;
@@ -66,6 +68,8 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +85,49 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
       propertyAvailable: 'To be discussed',
       message: formData.message,
     });
+
+    setShowConfirm(true);
+  };
+
+  const sendWhatsAppMessage = async () => {
+    const lines = [
+      '*New Franchise Enquiry - A Kids Pre School*',
+      '',
+      `*Name:* ${formData.name}`,
+      `*Phone:* ${formData.phone}`,
+      `*Email:* ${formData.email || 'N/A'}`,
+      `*City:* ${formData.city || 'N/A'}`,
+      `*Experience:* ${formData.experience}`,
+      formData.message ? `*Message:* ${formData.message}` : '',
+    ].filter(Boolean).join('\n');
+
+    try {
+      const response = await fetch('/api/send-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: lines,
+          type: 'franchise',
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.url) {
+        window.open(result.url, '_blank');
+      }
+    } catch (error) {
+      console.error('WhatsApp send error:', error);
+      const encoded = encodeURIComponent(lines);
+      window.open(`https://wa.me/919945531032?text=${encoded}`, '_blank');
+    }
+  };
+
+  const handleConfirmSend = async () => {
+    setIsSending(true);
+    await sendWhatsAppMessage();
+    setIsSending(false);
+    setShowConfirm(false);
 
     setSubmitted(true);
     try {
@@ -428,7 +475,7 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                     <h3 className="font-heading font-extrabold text-base text-[#173B5E] mb-1">
                       {benefit.title}
                     </h3>
-                    <p className="text-sm text-gray-600 font-medium leading-relaxed">
+                    <p className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed">
                       {benefit.desc}
                     </p>
                   </div>
@@ -441,19 +488,27 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
 
 
       {/* ═══════════════════════════════════════════════════════
-          HOW WE HELP YOU SUCCEED — Step by Step
+          HOW WE HELP YOU SUCCEED - Journey Steps
       ═══════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24 bg-[#FFF9EC]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16 sm:py-24 bg-[#173B5E] text-white overflow-hidden relative">
+        {/* Decorative background */}
+        <div className="absolute top-10 left-10 opacity-15 pointer-events-none">
+          <StarDeco size={60} color="#FFD21F" />
+        </div>
+        <div className="absolute bottom-10 right-10 opacity-15 pointer-events-none">
+          <SunshineDeco size={80} />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-14">
-            <span className="inline-block px-3.5 py-1 rounded-full bg-[#29B6F6]/20 text-[#0288D1] font-heading font-extrabold text-xs tracking-wider uppercase mb-2">
-              Your Journey With AKP
+            <span className="inline-block px-3.5 py-1 rounded-full bg-[#FFD21F]/20 text-[#FFD21F] font-heading font-extrabold text-xs tracking-wider uppercase mb-2">
+              Your Franchise Journey
             </span>
-            <h2 className="font-heading font-black text-3xl sm:text-5xl text-[#173B5E] tracking-tight">
+            <h2 className="font-heading font-black text-3xl sm:text-5xl text-white tracking-tight">
               HOW WE HELP YOU SUCCEED
             </h2>
-            <p className="text-base text-gray-700 font-medium mt-2">
-              A simple, structured path from first conversation to a thriving preschool.
+            <p className="text-base text-white/80 font-medium mt-2">
+              A clear, step-by-step path from initial enquiry to a thriving preschool.
             </p>
           </div>
 
@@ -461,28 +516,22 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
             {journeySteps.map((step, i) => {
               const Icon = step.icon;
               return (
-                <div key={i} className="group relative">
-                  {/* Connector line (desktop) */}
-                  {i < journeySteps.length - 1 && i % 3 !== 2 && (
-                    <div className="hidden lg:block absolute top-10 left-[calc(50%+40px)] w-[calc(100%-40px)] h-0.5 bg-gradient-to-r from-[#F4511E]/30 to-[#FFD21F]/30 z-0" />
-                  )}
-
-                  <div className="relative bg-white rounded-3xl p-6 sm:p-7 border-2 border-gray-100 hover:border-[#F4511E]/30 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-center">
-                    {/* Step number badge */}
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#F4511E] text-white font-heading font-black text-xs flex items-center justify-center shadow-md">
-                      {step.num}
-                    </div>
-
-                    <div className="w-14 h-14 rounded-2xl bg-[#FFF3E0] text-[#F4511E] flex items-center justify-center mx-auto mb-4 mt-2 transition-transform duration-300 group-hover:scale-110">
-                      <Icon className="w-7 h-7" />
-                    </div>
-                    <h3 className="font-heading font-extrabold text-base text-[#173B5E] mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 font-medium leading-relaxed">
-                      {step.desc}
-                    </p>
+                <div
+                  key={i}
+                  className="group relative bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 hover:bg-white/15 hover:border-[#FFD21F]/40 transition-all duration-300"
+                >
+                  <div className="absolute -top-3 -left-3 w-10 h-10 rounded-xl bg-[#FFD21F] text-[#173B5E] flex items-center justify-center font-heading font-black text-sm shadow-lg">
+                    {step.num}
                   </div>
+                  <div className="w-12 h-12 rounded-2xl bg-[#F4511E]/20 text-[#FF8A3D] flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110">
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-heading font-extrabold text-lg text-white mb-2">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm text-white/70 font-medium leading-relaxed">
+                    {step.desc}
+                  </p>
                 </div>
               );
             })}
@@ -492,64 +541,58 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
 
 
       {/* ═══════════════════════════════════════════════════════
-          FRANCHISE OPPORTUNITIES IN BANGALORE
+          BANGALORE FRANCHISE SECTION
       ═══════════════════════════════════════════════════════ */}
       <section className="py-16 sm:py-24 bg-white border-y-2 border-orange-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left content */}
             <div>
-              <span className="inline-block px-3.5 py-1 rounded-full bg-[#FFD21F]/30 text-[#F57F17] font-heading font-extrabold text-xs tracking-wider uppercase mb-3">
-                📍 Bangalore Focus
+              <span className="inline-block px-3.5 py-1 rounded-full bg-[#29B6F6]/15 text-[#0288D1] font-heading font-extrabold text-xs tracking-wider uppercase mb-4">
+                Bengaluru Focus
               </span>
-              <h2 className="font-heading font-black text-3xl sm:text-4xl text-[#173B5E] tracking-tight leading-tight mb-4">
-                FRANCHISE OPPORTUNITIES <br className="hidden sm:block" /> IN BANGALORE
+              <h2 className="font-heading font-black text-3xl sm:text-4xl text-[#173B5E] tracking-tight mb-6">
+                FRANCHISE OPPORTUNITIES <br />
+                <span className="text-[#F4511E]">IN BANGALORE</span>
               </h2>
-              <p className="text-base text-gray-700 font-medium leading-relaxed mb-4">
-                Bangalore has diverse and growing residential communities, working families, and increasing demand for quality early childhood education. Finding the right location and understanding the local community are key to building a successful preschool.
-              </p>
-              <p className="text-sm text-gray-600 font-medium leading-relaxed mb-6">
-                Our team will guide prospective partners through the planning process and help them understand the relevant requirements for setting up a preschool.
+              <p className="text-base text-gray-700 font-medium leading-relaxed mb-6">
+                Bangalore has diverse and growing residential communities, working families, and increasing demand for quality early childhood education. We help you find the right location and understand the local community to build a successful preschool.
               </p>
 
               <div className="space-y-3">
                 {bangaloreConsiderations.map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-[#F4511E]/10 text-[#F4511E] flex items-center justify-center shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                    </div>
-                    <p className="text-sm text-gray-700 font-medium">{item}</p>
+                    <CheckCircle2 className="w-5 h-5 text-[#5BC85A] shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700 font-medium">{item}</span>
                   </div>
                 ))}
               </div>
+
+              <div className="mt-6 p-4 rounded-2xl bg-[#FFF9EC] border-2 border-[#FFD21F]">
+                <p className="text-sm text-[#173B5E] font-medium leading-relaxed">
+                  <strong>Our team will guide prospective partners through the planning process and help them understand the relevant requirements for setting up a preschool.</strong>
+                </p>
+              </div>
             </div>
 
-            {/* Right decorative card */}
             <div className="relative">
-              <div className="bg-gradient-to-br from-[#173B5E] to-[#1A4269] rounded-3xl p-8 sm:p-10 text-white shadow-2xl">
-                <div className="absolute top-4 right-4 opacity-20 pointer-events-none">
-                  <StarDeco size={40} color="#FFD21F" />
+              <div className="bg-[#173B5E] rounded-3xl p-8 text-white text-center">
+                <div className="w-16 h-16 rounded-2xl bg-[#FFD21F]/20 text-[#FFD21F] flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-8 h-8" />
                 </div>
-                <div className="absolute bottom-4 left-4 opacity-15 pointer-events-none">
-                  <SunshineDeco size={50} />
-                </div>
-
-                <MapPin className="w-10 h-10 text-[#FFD21F] mb-4" />
-                <h3 className="font-heading font-black text-2xl mb-3">
-                  Looking to Open in <span className="text-[#FFD21F]">Bangalore</span>?
+                <h3 className="font-heading font-extrabold text-xl mb-3">
+                  Ready to Explore Bangalore?
                 </h3>
-                <p className="text-white/80 text-sm font-medium leading-relaxed mb-6">
-                  We're actively looking for passionate partners in Bangalore's family-friendly residential communities. Let's discuss the right location and plan for your centre.
+                <p className="text-sm text-white/80 font-medium mb-6">
+                  Let's discuss how you can bring A Kid's Pre School to your neighbourhood.
                 </p>
                 <button
                   onClick={() => {
                     const elem = document.getElementById('franchise-form-section');
                     elem?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="px-6 py-3 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-sm uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer"
+                  className="px-6 py-3 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-bold text-sm uppercase transition-all cursor-pointer"
                 >
-                  <Phone className="w-4 h-4" />
-                  Talk to Our Franchise Team
+                  Start Your Journey
                 </button>
               </div>
             </div>
@@ -559,82 +602,57 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
 
 
       {/* ═══════════════════════════════════════════════════════
-          INVESTMENT DETAILS — Soft Messaging
+          FRANCHISE ENQUIRY FORM
       ═══════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 bg-[#FFF9EC]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-white rounded-3xl p-8 sm:p-12 border-2 border-[#FFD21F]/40 shadow-lg">
-            <div className="w-16 h-16 rounded-2xl bg-[#FFFDE7] text-[#F57F17] flex items-center justify-center mx-auto mb-5">
-              <Target className="w-8 h-8" />
-            </div>
-            <h2 className="font-heading font-black text-2xl sm:text-4xl text-[#173B5E] tracking-tight mb-3">
-              FLEXIBLE, SCALABLE FRANCHISE MODEL
-            </h2>
-            <p className="text-base text-gray-700 font-medium max-w-2xl mx-auto leading-relaxed mb-4">
-              A scalable franchise model designed around your location and centre requirements. Investment details can be discussed during your franchise consultation.
-            </p>
-            <p className="text-sm text-gray-500 font-medium max-w-xl mx-auto leading-relaxed mb-8">
-              Flexible planning based on location, infrastructure, and centre size. Every partnership is unique — let's talk about what works best for you.
-            </p>
-            <button
-              onClick={() => {
-                const elem = document.getElementById('franchise-form-section');
-                elem?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="px-8 py-4 rounded-2xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-sm uppercase tracking-wider shadow-xl transition-all flex items-center gap-2 cursor-pointer mx-auto"
-            >
-              <Phone className="w-5 h-5" />
-              Talk to Our Franchise Team
-            </button>
-          </div>
-        </div>
-      </section>
-
-
-      {/* ═══════════════════════════════════════════════════════
-          FRANCHISE APPLICATION FORM
-      ═══════════════════════════════════════════════════════ */}
-      <section id="franchise-form-section" className="py-16 sm:py-24 bg-white">
+      <section id="franchise-form-section" className="py-16 sm:py-24 bg-[#FFF9EC]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-[#FFF9EC] rounded-3xl p-6 sm:p-12 border-4 border-[#FFD21F] shadow-2xl">
-            {submitted ? (
-              <div className="text-center py-10">
-                <div className="w-16 h-16 rounded-full bg-[#5BC85A]/20 text-[#5BC85A] flex items-center justify-center mx-auto mb-4 animate-bounce">
-                  <CheckCircle2 className="w-10 h-10" />
-                </div>
-                <h3 className="font-heading font-black text-3xl text-[#173B5E] mb-2">
-                  Franchise Application Received! 🦁
-                </h3>
-                <p className="text-base text-gray-700 max-w-md mx-auto leading-relaxed">
-                  Thank you for your interest in partnering with <strong>A Kid's Pre School</strong>. Our Head of Franchise Expansion will reach out to you within 24 business hours!
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="text-center max-w-xl mx-auto mb-6">
-                  <span className="text-xs font-extrabold uppercase text-[#F4511E] tracking-wider">
-                    Start the Conversation
-                  </span>
-                  <h3 className="font-heading font-black text-2xl sm:text-4xl text-[#173B5E]">
-                    PARTNER WITH A KID'S PRE SCHOOL
-                  </h3>
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1">
-                    Fill out the form below and our franchise team will be in touch to discuss opportunities in your area.
-                  </p>
-                </div>
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="inline-block px-3.5 py-1 rounded-full bg-[#F4511E]/15 text-[#F4511E] font-heading font-extrabold text-xs tracking-wider uppercase mb-2">
+              Get In Touch
+            </span>
+            <h2 className="font-heading font-black text-3xl sm:text-5xl text-[#173B5E] tracking-tight">
+              ENQUIRE ABOUT FRANCHISE
+            </h2>
+            <p className="text-base text-gray-700 font-medium mt-2">
+              Investment details can be discussed during your franchise consultation.
+            </p>
+          </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {submitted ? (
+            <div className="bg-white rounded-3xl p-8 sm:p-12 border-4 border-[#5BC85A] shadow-xl text-center">
+              <div className="flex justify-center mb-6">
+                <LeoCharacter
+                  state="celebrating"
+                  celebrating={true}
+                  size={160}
+                  message="Roar-some! 🎉"
+                  subMessage="Thank you for your interest!"
+                  showActions={false}
+                  interactive={false}
+                />
+              </div>
+              <h3 className="font-heading font-black text-2xl text-[#173B5E] mb-4">
+                Thank You For Your Interest! 🦁
+              </h3>
+              <p className="text-sm text-gray-700 font-medium max-w-md mx-auto leading-relaxed">
+                Thank you for your interest in partnering with <strong>A Kid's Pre School</strong>. Our Head of Franchise Expansion will reach out to you within 24 business hours!
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 sm:p-10 border-4 border-[#FFD21F] shadow-xl">
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-bold text-[#173B5E] mb-1">
-                      Applicant Full Name *
+                      Full Name *
                     </label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. Rajesh Kumar"
                       value={formData.name}
-                      onChange={(e) => setFormData({formData, name: e.target.value })}
-                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-[#FFF9EC]/40 text-[#173B5E] font-medium"
                     />
                   </div>
 
@@ -648,62 +666,79 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                       placeholder="+91 98452 96096"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-[#FFF9EC]/40 text-[#173B5E] font-medium"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-bold text-[#173B5E] mb-1">
                       Email Address
                     </label>
                     <input
                       type="email"
-                      placeholder="partner@gmail.com"
+                      placeholder="your@email.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-[#FFF9EC]/40 text-[#173B5E] font-medium"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-[#173B5E] mb-1">
-                      Proposed City / Location
+                      City / Location
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Bengaluru, Mysuru, Hyderabad"
+                      placeholder="e.g. Bengaluru, Mumbai"
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-[#FFF9EC]/40 text-[#173B5E] font-medium"
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-[#173B5E] mb-1">
-                    Your Background / Message
+                    Your Background / Experience
+                  </label>
+                  <select
+                    value={formData.experience}
+                    onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-[#FFF9EC]/40 text-[#173B5E] font-medium"
+                  >
+                    <option value="Educator / School Owner">Educator / School Owner</option>
+                    <option value="Business Professional">Business Professional</option>
+                    <option value="Homemaker / Parent">Homemaker / Parent</option>
+                    <option value="First-time Entrepreneur">First-time Entrepreneur</option>
+                    <option value="Real Estate / Property Owner">Real Estate / Property Owner</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#173B5E] mb-1">
+                    Your Message (Optional)
                   </label>
                   <textarea
                     rows={3}
-                    placeholder="Tell us about your educational or business background, goals, or target launch timeline..."
+                    placeholder="Tell us about your vision, preferred location, or any questions..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-white font-medium"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#F4511E] focus:outline-none bg-[#FFF9EC]/40 text-[#173B5E] font-medium"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-2xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-sm uppercase tracking-wider shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-2xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[#F4511E]/30 flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-5 h-5" />
                   Submit Franchise Enquiry 🦁
                 </button>
-              </form>
-            )}
-          </div>
+              </div>
+            </form>
+          )}
         </div>
       </section>
 
@@ -712,37 +747,29 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
           FINAL CTA
       ═══════════════════════════════════════════════════════ */}
       <section className="py-16 sm:py-24 bg-[#173B5E] text-white relative overflow-hidden">
-        <div className="absolute top-6 left-8 opacity-15 pointer-events-none">
-          <StarDeco size={40} color="#FFD21F" />
+        <div className="absolute top-10 right-10 opacity-15 pointer-events-none">
+          <StarDeco size={50} color="#FFD21F" />
         </div>
-        <div className="absolute bottom-6 right-8 opacity-15 pointer-events-none">
-          <SunshineDeco size={55} />
-        </div>
-        <div className="absolute top-1/3 right-1/4 opacity-10 pointer-events-none">
-          <CloudDeco size={70} color="#ffffff" />
+        <div className="absolute bottom-10 left-10 opacity-15 pointer-events-none">
+          <SunshineDeco size={60} />
         </div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-[#FFD21F]/30 text-[#FFD21F] font-heading font-extrabold text-xs sm:text-sm uppercase tracking-wider mb-6">
-            <span>🦁 Your Preschool Journey Starts Here</span>
-          </div>
-
-          <h2 className="font-heading font-black text-3xl sm:text-5xl text-white tracking-tight leading-tight mb-4">
+          <h2 className="font-heading font-black text-3xl sm:text-5xl text-white tracking-tight mb-6">
             READY TO BUILD SOMETHING <br />
             <span className="text-[#FFD21F]">MEANINGFUL WITH AKP?</span>
           </h2>
-
-          <p className="text-white/85 text-base sm:text-xl font-medium max-w-2xl mx-auto leading-relaxed mb-10">
+          <p className="text-lg text-white/85 font-medium max-w-2xl mx-auto mb-10 leading-relaxed">
             Partner with us to create a joyful, engaging learning space for young children in your community.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={() => {
                 const elem = document.getElementById('franchise-form-section');
                 elem?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="px-8 py-4 rounded-2xl bg-[#F4511E] text-white font-heading font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-xl hover:bg-[#E64A19] transition-all flex items-center gap-2 cursor-pointer"
+              className="px-8 py-4 rounded-2xl bg-[#F4511E] text-white font-heading font-extrabold text-sm uppercase tracking-wider shadow-xl hover:bg-[#E64A19] transition-all flex items-center gap-2 cursor-pointer"
             >
               <Building className="w-5 h-5" />
               Explore Franchise Opportunities
@@ -752,7 +779,7 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                 const elem = document.getElementById('franchise-form-section');
                 elem?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="px-8 py-4 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-heading font-extrabold text-xs sm:text-sm uppercase tracking-wider border border-white/30 transition-all flex items-center gap-2 cursor-pointer"
+              className="px-8 py-4 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-heading font-extrabold text-sm uppercase tracking-wider border border-white/30 transition-all flex items-center gap-2 cursor-pointer"
             >
               <Phone className="w-5 h-5 text-[#FFD21F]" />
               Talk to Our Franchise Team
@@ -761,6 +788,15 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
         </div>
       </section>
 
+      {/* WhatsApp Confirmation Popup */}
+      <WhatsAppConfirmPopup
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={handleConfirmSend}
+        formData={formData}
+        enquiryType="Franchise Enquiry"
+        isSending={isSending}
+      />
     </div>
   );
 };

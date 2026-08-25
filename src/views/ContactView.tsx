@@ -24,6 +24,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { WhatsAppConfirmPopup } from '../components/WhatsAppConfirmPopup';
 
 interface ContactViewProps {
   onNavigate: (tab: PageTab) => void;
@@ -47,10 +48,12 @@ export const ContactView: React.FC<ContactViewProps> = ({
   });
   const [submitted, setSubmitted] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const faqs = [
     {
-      q: 'What is the minimum age for admission at A Kid’s Pre School?',
+      q: 'What is the minimum age for admission at A Kid\'s Pre School?',
       a: 'Children can join our Playgroup starting at 1.5 years (18 months). Our Nursery program welcomes children from 2.5 years, Junior KG from 3.5 years, and Senior KG from 4.5 years. Full-day daycare is open for ages 1.5 to 8 years.',
     },
     {
@@ -83,6 +86,41 @@ export const ContactView: React.FC<ContactViewProps> = ({
     },
   ];
 
+  const sendWhatsAppMessage = async (data: Record<string, string>) => {
+    const lines = [
+      `*New Contact Enquiry - A Kids Pre School*`,
+      '',
+      `*Name:* ${data.parentName || 'N/A'}`,
+      `*Phone:* ${data.phone || 'N/A'}`,
+      `*Email:* ${data.email || 'N/A'}`,
+      `*Child Age/Program:* ${data.childAge || 'N/A'}`,
+      `*Enquiry Type:* ${data.enquiryType || 'N/A'}`,
+      `*Locality:* ${data.city || 'N/A'}`,
+      data.message ? `*Message:* ${data.message}` : '',
+    ].filter(Boolean).join('\n');
+
+    try {
+      const response = await fetch('/api/send-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: lines,
+          type: 'contact',
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.url) {
+        window.open(result.url, '_blank');
+      }
+    } catch (error) {
+      console.error('WhatsApp send error:', error);
+      const encoded = encodeURIComponent(lines);
+      window.open(`https://wa.me/919945531032?text=${encoded}`, '_blank');
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.parentName || !formData.phone) return;
@@ -96,6 +134,15 @@ export const ContactView: React.FC<ContactViewProps> = ({
       city: formData.city,
       message: formData.message,
     });
+
+    setShowConfirm(true);
+  };
+
+  const handleConfirmSend = async () => {
+    setIsSending(true);
+    await sendWhatsAppMessage(formData);
+    setIsSending(false);
+    setShowConfirm(false);
 
     setSubmitted(true);
     try {
@@ -139,7 +186,7 @@ export const ContactView: React.FC<ContactViewProps> = ({
           </div>
 
           <h1 className="font-heading font-black text-4xl sm:text-6xl text-white tracking-tight leading-tight mb-4">
-            LET’S START A CONVERSATION <br />
+            LET'S START A CONVERSATION <br />
             <span className="text-[#FFD21F]">FOR YOUR LITTLE ONE.</span>
           </h1>
 
@@ -410,6 +457,16 @@ export const ContactView: React.FC<ContactViewProps> = ({
           </div>
         </div>
       </section>
+
+      {/* WhatsApp Confirmation Popup */}
+      <WhatsAppConfirmPopup
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={handleConfirmSend}
+        formData={formData}
+        enquiryType="Contact Enquiry"
+        isSending={isSending}
+      />
     </div>
   );
 };

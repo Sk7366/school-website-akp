@@ -28,7 +28,7 @@ export const FloatingSocials: React.FC<FloatingSocialsProps> = () => {
 
       {/* Instagram */}
       <a
-        href="https://instagram.com"
+        href="https://www.instagram.com/a_kids_preschool/"
         target="_blank"
         rel="noopener noreferrer"
         className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#F4511E] to-[#FF4F6D] text-white flex items-center justify-center transition-all hover:scale-110 shadow-md group relative"
@@ -56,7 +56,7 @@ export const FloatingSocials: React.FC<FloatingSocialsProps> = () => {
 
       {/* Facebook */}
       <a
-        href="https://facebook.com"
+        href="https://www.facebook.com/a_kids_preschool/"
         target="_blank"
         rel="noopener noreferrer"
         className="w-10 h-10 rounded-xl bg-[#1E88E5] hover:bg-[#1976D2] text-white flex items-center justify-center transition-all hover:scale-110 shadow-md group relative"

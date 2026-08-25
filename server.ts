@@ -35,8 +35,75 @@ async function startServer() {
     res.json({
       status: "ok",
       hasGeminiKey: Boolean(process.env.GEMINI_API_KEY),
+      hasWhatsAppToken: Boolean(process.env.WHATSAPP_API_TOKEN),
       timestamp: new Date().toISOString(),
     });
+  });
+
+  // WhatsApp Business API endpoint for automatic message sending
+  app.post("/api/send-whatsapp", async (req, res) => {
+    try {
+      const { to, message, type } = req.body;
+
+      if (!message || typeof message !== "string") {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      const whatsappToken = process.env.WHATSAPP_API_TOKEN;
+      const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+      const recipientNumber = to || process.env.WHATSAPP_RECIPIENT_NUMBER || "919945531032";
+
+      // If WhatsApp Business API is configured, send automatically
+      if (whatsappToken && phoneNumberId) {
+        const response = await fetch(
+          `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`,
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${whatsappToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              messaging_product: "whatsapp",
+              to: recipientNumber,
+              type: "text",
+              text: {
+                body: message,
+              },
+            }),
+          }
+        );
+
+        const result = await response.json();
+
+        if (response.ok) {
+          return res.json({
+            success: true,
+            method: "api",
+            messageId: result.messages?.[0]?.id,
+          });
+        } else {
+          console.error("WhatsApp API Error:", result);
+          // Fall back to redirect method
+        }
+      }
+
+      // Fallback: Return the WhatsApp URL for client-side redirect
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${recipientNumber}?text=${encodedMessage}`;
+
+      return res.json({
+        success: true,
+        method: "redirect",
+        url: whatsappUrl,
+      });
+    } catch (error: any) {
+      console.error("WhatsApp send error:", error);
+      return res.status(500).json({
+        error: "Failed to send message",
+        details: error?.message,
+      });
+    }
   });
 
   // Gemini API route for "Ask Leo" AI Mascot Chatbot

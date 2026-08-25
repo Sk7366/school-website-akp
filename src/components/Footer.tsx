@@ -49,7 +49,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmissionModal
                 <MessageCircle className="w-4 h-4" />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/a_kids_preschool/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-xl bg-[#F4511E] text-white flex items-center justify-center hover:scale-110 transition-transform"
@@ -67,7 +67,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmissionModal
                 <Youtube className="w-4 h-4" />
               </a>
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/a_kids_preschool/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-xl bg-[#29B6F6] text-white flex items-center justify-center hover:scale-110 transition-transform"
