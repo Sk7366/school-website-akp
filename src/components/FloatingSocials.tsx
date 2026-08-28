@@ -1,5 +1,5 @@
 import React from 'react';
-import { Instagram, Youtube, Facebook, MessageCircle } from 'lucide-react';
+import { Instagram, Youtube, MessageCircle } from 'lucide-react';
 
 interface FloatingSocialsProps {
   onOpenAdmissionModal?: () => void;
@@ -54,19 +54,7 @@ export const FloatingSocials: React.FC<FloatingSocialsProps> = () => {
         </span>
       </a>
 
-      {/* Facebook */}
-      <a
-        href="https://www.facebook.com/a_kids_preschool/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="w-10 h-10 rounded-xl bg-[#1E88E5] hover:bg-[#1976D2] text-white flex items-center justify-center transition-all hover:scale-110 shadow-md group relative"
-        aria-label="Follow us on Facebook"
-      >
-        <Facebook className="w-5 h-5" />
-        <span className="absolute left-12 px-2.5 py-1 bg-[#173B5E] text-white text-xs font-bold rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          Facebook Page 📘
-        </span>
-      </a>
+
     </aside>
   );
 };
