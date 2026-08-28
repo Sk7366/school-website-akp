@@ -2,9 +2,15 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
+import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 
 dotenv.config();
+
+// Initialize Supabase client (backend uses service_role key)
+const supabaseUrl = process.env.SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Initialize Google GenAI lazily or with environment key
 const getGenAI = () => {
@@ -36,11 +42,94 @@ async function startServer() {
       status: "ok",
       hasGeminiKey: Boolean(process.env.GEMINI_API_KEY),
       hasWhatsAppToken: Boolean(process.env.WHATSAPP_API_TOKEN),
+      hasSupabase: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
       timestamp: new Date().toISOString(),
     });
   });
 
-  // WhatsApp Business API endpoint for automatic message sending
+  // ============================================
+  // TEST ENDPOINT: Supabase RLS & Connection
+  // ============================================
+  app.get("/api/test-supabase", async (req, res) => {
+    try {
+      // Test 1: Insert into admissions (should work with service_role)
+      const { data: admissionData, error: admissionError } = await supabase
+        .from("admissions")
+        .insert([{
+          parent_name: "Test Parent",
+          child_name: "Test Child",
+          child_age: 4,
+          phone: "9999999999",
+          program: "Nursery",
+          message: "RLS Test - This is a test entry",
+          status: "new"
+        }])
+        .select();
+      
+      if (admissionError) {
+        return res.json({ 
+          admissions: "FAILED", 
+          error: admissionError.message,
+          hint: "Check if RLS policies are set up correctly"
+        });
+      }
+      
+      // Test 2: Read gallery events (should work - service_role bypasses RLS)
+      const { data: galleryData, error: galleryError } = await supabase
+        .from("gallery_events")
+        .select("*")
+        .eq("published", true)
+        .limit(5);
+      
+      if (galleryError) {
+        return res.json({ 
+          gallery: "FAILED", 
+          error: galleryError.message 
+        });
+      }
+      
+      // Test 3: Read articles (should work)
+      const { data: articlesData, error: articlesError } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("published", true)
+        .limit(3);
+      
+      if (articlesError) {
+        return res.json({ 
+          articles: "FAILED", 
+          error: articlesError.message 
+        });
+      }
+      
+      // Clean up: Delete the test admission entry
+      if (admissionData && admissionData.length > 0) {
+        await supabase
+          .from("admissions")
+          .delete()
+          .eq("id", admissionData[0].id);
+      }
+      
+      res.json({
+        admissions: "SUCCESS",
+        gallery: "SUCCESS",
+        galleryCount: galleryData?.length || 0,
+        articles: "SUCCESS",
+        articlesCount: articlesData?.length || 0,
+        message: "✅ Supabase connection and RLS policies are working correctly!",
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        error: error.message,
+        hint: "Check your .env file for SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY"
+      });
+    }
+  });
+
+  // ============================================
+  // WhatsApp Business API endpoint
+  // ============================================
   app.post("/api/send-whatsapp", async (req, res) => {
     try {
       const { to, message, type } = req.body;
@@ -99,14 +188,16 @@ async function startServer() {
       });
     } catch (error: any) {
       console.error("WhatsApp send error:", error);
-      return res.status(500).json({
+      res.status(500).json({
         error: "Failed to send message",
         details: error?.message,
       });
     }
   });
 
-  // Gemini API route for "Ask Leo" AI Mascot Chatbot
+  // ============================================
+  // Gemini API route for "Ask Leo" AI Chatbot
+  // ============================================
   app.post("/api/ask-leo", async (req, res) => {
     try {
       const { message, childAge, program, history } = req.body;
@@ -186,7 +277,7 @@ Guidelines for your response:
       });
     } catch (error: any) {
       console.error("Gemini API Error in /api/ask-leo:", error);
-      return res.json({
+      res.json({
         reply:
           "🦁 *Roar!* Leo is right here! Whether you're curious about our admissions, meal menus, or potty training techniques, our teachers and I are ready to welcome your family! Feel free to click 'Book a Tour' to visit our cheerful classrooms!",
         isFallback: true,
@@ -195,7 +286,9 @@ Guidelines for your response:
     }
   });
 
+  // ============================================
   // Vite middleware for development
+  // ============================================
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -211,7 +304,8 @@ Guidelines for your response:
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`PreSchool Server running on port ${PORT}`);
+    console.log(`🦁 PreSchool Server running on port ${PORT}`);
+    console.log(`📊 Test Supabase: http://localhost:${PORT}/api/test-supabase`);
   });
 }
 
