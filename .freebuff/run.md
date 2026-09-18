@@ -8,34 +8,40 @@
    cd /Users/saikirtikrishnan/Downloads/project
    npm install
    ```
+3. Build for production (required — the Vite dev server process gets reaped by macOS launchd):
+   ```bash
+   cd /Users/saikirtikrishnan/Downloads/project
+   npx vite build
+   ```
 
-## Run the dev server
+## Run the server
+
+### Method: launchctl submit (recommended — survives shell exits)
 
 ```bash
+# Create the startup script
+cat > /tmp/akp-start.sh << 'HEREDOC'
+#!/bin/bash
+export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin"
+export NODE_ENV=production
+export NODE_PATH="/Users/saikirtikrishnan/Downloads/project/node_modules"
 cd /Users/saikirtikrishnan/Downloads/project
-nohup npx tsx server.ts > .freebuff/preview-bd728f51-4da1-4c58-9593-04d5dd600e57.log 2>&1 < /dev/null &
-echo "pid=$!"; disown
+exec /usr/local/bin/node --import tsx/esm server.ts
+HEREDOC
+chmod +x /tmp/akp-start.sh
+
+# Submit via launchd
+launchctl remove com.codebuff.preview 2>/dev/null
+launchctl submit -l com.codebuff.preview -- /tmp/akp-start.sh
 ```
 
 - Server listens on **port 3000** (`http://localhost:3000`).
 - Health check: `GET /api/health`.
-- Uses Vite middleware in dev mode (no build needed).
-- If the background process is reaped by the shell, relaunch via launchd:
-  ```bash
-  launchctl submit -l com.codebuff.preview -- /tmp/preview-server.sh
-  ```
-  where `/tmp/preview-server.sh` is:
-  ```bash
-  #!/bin/bash
-  export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin"
-  cd /Users/saikirtikrishnan/Downloads/project
-  exec node --import tsx/esm server.ts
-  ```
-  Cleanup: `launchctl remove com.codebuff.preview`
+- Uses `NODE_ENV=production` to serve built `dist/` files (no Vite middleware needed).
+- **Important:** The Vite dev server (`npx tsx server.ts` without `NODE_ENV=production`) starts successfully but the process gets reaped by macOS within seconds. The production build is stable.
 
 ## Cleanup
 
 ```bash
 launchctl remove com.codebuff.preview 2>/dev/null
-kill $(lsof -ti:3000) 2>/dev/null
 ```

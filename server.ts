@@ -8,9 +8,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Initialize Supabase client (backend uses service_role key)
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const supabaseUrl = process.env.SUPABASE_URL || "";
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const supabase = supabaseUrl ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
 // Initialize Google GenAI lazily or with environment key
 const getGenAI = () => {
@@ -51,6 +51,9 @@ async function startServer() {
   // TEST ENDPOINT: Supabase RLS & Connection
   // ============================================
   app.get("/api/test-supabase", async (req, res) => {
+    if (!supabase) {
+      return res.json({ error: "Supabase not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env" });
+    }
     try {
       // Test 1: Insert into admissions (should work with service_role)
       const { data: admissionData, error: admissionError } = await supabase
