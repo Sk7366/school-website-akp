@@ -190,6 +190,9 @@ async function startServer() {
       .replace(/>/g, "&gt;");
   };
 
+  // Cache for resolved Telegram chat ID (handles group -> supergroup migration)
+  let activeTelegramChatId: string | number | null = null;
+
   const sendTelegramNotification = async (payload: {
     submissionType: string;
     parentName: string;
@@ -208,9 +211,9 @@ async function startServer() {
     submittedAt: string;
   }): Promise<{ sent: boolean; reason?: string }> => {
     const token = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    const initialChatId = activeTelegramChatId || process.env.TELEGRAM_CHAT_ID;
 
-    if (!token || !chatId) {
+    if (!token || !initialChatId) {
       console.warn(
         "[Telegram] Notification skipped: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is not configured in environment."
       );
@@ -264,24 +267,57 @@ async function startServer() {
 
     const text = lines.join("\n");
 
-    try {
+    const postMessage = async (targetChatId: string | number) => {
       const telegramUrl = `https://api.telegram.org/bot${token}/sendMessage`;
-      const response = await fetch(telegramUrl, {
+      const res = await fetch(telegramUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          chat_id: chatId,
+          chat_id: targetChatId,
           text,
           parse_mode: "HTML",
         }),
       });
+      return await res.json();
+    };
 
-      const result = await response.json();
-      if (!response.ok || !result.ok) {
-        console.error(
-          "[Telegram] Telegram API error:",
-          result.description || response.statusText
-        );
+    try {
+      let result = await postMessage(initialChatId);
+
+      // Handle Telegram group migration or chat-not-found when group was converted to supergroup
+      if (!result.ok) {
+        let migratedId: string | number | null = result.parameters?.migrate_to_chat_id || null;
+
+        if (!migratedId && result.description && result.description.toLowerCase().includes("chat not found")) {
+          try {
+            const updatesRes = await fetch(`https://api.telegram.org/bot${token}/getUpdates`);
+            const updatesData = await updatesRes.json();
+            if (updatesData.ok && Array.isArray(updatesData.result)) {
+              for (let i = updatesData.result.length - 1; i >= 0; i--) {
+                const u = updatesData.result[i];
+                const chat = u.message?.chat || u.my_chat_member?.chat || u.channel_post?.chat;
+                if (chat && chat.id) {
+                  migratedId = chat.id;
+                  break;
+                }
+              }
+            }
+          } catch (fetchErr) {
+            console.warn("[Telegram] Error fetching bot updates for chat resolution:", fetchErr);
+          }
+        }
+
+        if (migratedId && migratedId !== initialChatId) {
+          console.log(`[Telegram] Retrying delivery with resolved supergroup chat ID: ${migratedId}`);
+          result = await postMessage(migratedId);
+          if (result.ok) {
+            activeTelegramChatId = migratedId;
+          }
+        }
+      }
+
+      if (!result.ok) {
+        console.error("[Telegram] Telegram API error:", result.description || "Unknown error");
         return { sent: false, reason: result.description || "API returned error" };
       }
 
@@ -321,9 +357,8 @@ async function startServer() {
     try {
       // 1. Admission Enquiry -> 'admissions' table
       if (typeLower.includes("admission")) {
-        const parsedAge = submission.child_age
-          ? parseInt(String(submission.child_age).replace(/\D/g, ""), 10) || 3
-          : 3;
+        const match = String(submission.child_age || "").match(/\d+(\.\d+)?/);
+        const parsedAge = match ? Math.round(parseFloat(match[0])) || 3 : 3;
 
         const { data, error } = await supabase
           .from("admissions")
@@ -351,9 +386,8 @@ async function startServer() {
 
       // 2. Campus Tour Booking -> 'tour_bookings' table
       if (typeLower.includes("tour")) {
-        const parsedAge = submission.child_age
-          ? parseInt(String(submission.child_age).replace(/\D/g, ""), 10) || null
-          : null;
+        const match = String(submission.child_age || "").match(/\d+(\.\d+)?/);
+        const parsedAge = match ? Math.round(parseFloat(match[0])) || null : null;
 
         const tourMessage = [
           submission.child_name ? `Child: ${submission.child_name}` : "",
