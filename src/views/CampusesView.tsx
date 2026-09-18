@@ -152,12 +152,10 @@ export const CampusesView: React.FC<CampusesViewProps> = ({
                 </button>
 
                 <a
-                  href="https://wa.me/919945531032?text=Hello!%20I%20would%20like%20directions%20to%20A%20Kid's%20Pre%20School%20campus%20on%20Hosa%20Road."
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="tel:+919945531032"
                   className="py-2.5 px-3 rounded-xl bg-[#5BC85A] hover:bg-[#48b047] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
                 >
-                  <MessageCircle className="w-4 h-4" /> Ask on WhatsApp
+                  <Phone className="w-4 h-4" /> Call for Directions
                 </a>
               </div>
             </div>

@@ -256,7 +256,6 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
   const handleAction = (actionFn: () => void) => {
     actionFn();
     setIsBubbleVisible(false);
-    setIsUserInteracting(false);
   };
 
   const handleOpenAskLeo = () => {

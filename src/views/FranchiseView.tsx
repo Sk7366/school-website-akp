@@ -43,9 +43,9 @@ import {
   Star,
   Play,
   ChevronRight,
+  Loader2,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { WhatsAppConfirmPopup } from '../components/WhatsAppConfirmPopup';
 
 interface FranchiseViewProps {
   onNavigate: (tab: PageTab) => void;
@@ -68,89 +68,82 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone) return;
+    if (!formData.name || !formData.phone || isSending) return;
 
-    onSubmitFranchiseLead({
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email,
-      city: formData.city,
-      experience: formData.experience,
-      investmentBudget: 'To be discussed',
-      propertyAvailable: 'To be discussed',
-      message: formData.message,
-    });
-
-    setShowConfirm(true);
-  };
-
-  const sendWhatsAppMessage = async () => {
-    const lines = [
-      '*New Franchise Enquiry - A Kids Pre School*',
-      '',
-      `*Name:* ${formData.name}`,
-      `*Phone:* ${formData.phone}`,
-      `*Email:* ${formData.email || 'N/A'}`,
-      `*City:* ${formData.city || 'N/A'}`,
-      `*Experience:* ${formData.experience}`,
-      formData.message ? `*Message:* ${formData.message}` : '',
-    ].filter(Boolean).join('\n');
+    setIsSending(true);
 
     try {
-      const response = await fetch('/api/send-whatsapp', {
+      await fetch('/api/submit-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: lines,
           type: 'franchise',
+          parentName: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          city: formData.city,
+          message: formData.message,
+          metadata: {
+            experience: formData.experience,
+            investmentBudget: 'To be discussed',
+            propertyAvailable: 'To be discussed',
+          },
         }),
       });
 
-      const result = await response.json();
+      onSubmitFranchiseLead({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        city: formData.city,
+        experience: formData.experience,
+        investmentBudget: 'To be discussed',
+        propertyAvailable: 'To be discussed',
+        message: formData.message,
+      });
 
-      if (result.success && result.url) {
-        window.open(result.url, '_blank');
+      setSubmitted(true);
+      try {
+        confetti({
+          particleCount: 70,
+          spread: 80,
+          origin: { y: 0.6 },
+        });
+      } catch {
+        // safe fallback
       }
+
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({
+          name: '',
+          phone: '',
+          email: '',
+          city: '',
+          experience: 'Educator / School Owner',
+          message: '',
+        });
+      }, 4000);
     } catch (error) {
-      console.error('WhatsApp send error:', error);
-      const encoded = encodeURIComponent(lines);
-      window.open(`https://wa.me/919945531032?text=${encoded}`, '_blank');
-    }
-  };
-
-  const handleConfirmSend = async () => {
-    setIsSending(true);
-    await sendWhatsAppMessage();
-    setIsSending(false);
-    setShowConfirm(false);
-
-    setSubmitted(true);
-    try {
-      confetti({
-        particleCount: 70,
-        spread: 80,
-        origin: { y: 0.6 },
+      console.error('Franchise submission error:', error);
+      onSubmitFranchiseLead({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        city: formData.city,
+        experience: formData.experience,
+        investmentBudget: 'To be discussed',
+        propertyAvailable: 'To be discussed',
+        message: formData.message,
       });
-    } catch {
-      // safe fallback
+      setSubmitted(true);
+    } finally {
+      setIsSending(false);
     }
-
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        city: '',
-        experience: 'Educator / School Owner',
-        message: '',
-      });
-    }, 4000);
   };
 
   // ── Data ──────────────────────────────────────────────────
@@ -731,10 +724,20 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
 
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-2xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[#F4511E]/30 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  disabled={isSending}
+                  className="w-full py-4 rounded-2xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-[#F4511E]/30 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-5 h-5" />
-                  Submit Franchise Enquiry 🦁
+                  {isSending ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      SUBMITTING ENQUIRY...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Submit Franchise Enquiry 🦁
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -787,16 +790,6 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
           </div>
         </div>
       </section>
-
-      {/* WhatsApp Confirmation Popup */}
-      <WhatsAppConfirmPopup
-        isOpen={showConfirm}
-        onClose={() => setShowConfirm(false)}
-        onConfirm={handleConfirmSend}
-        formData={formData}
-        enquiryType="Franchise Enquiry"
-        isSending={isSending}
-      />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { GoogleGenAI } from "@google/genai";
+import Groq from "groq-sdk";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 
@@ -12,20 +12,53 @@ const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const supabase = supabaseUrl ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
-// Initialize Google GenAI lazily or with environment key
-const getGenAI = () => {
-  const apiKey = process.env.GEMINI_API_KEY;
+// Initialize Groq client lazily
+let groqClient: Groq | null = null;
+const getGroqClient = (): Groq | null => {
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     return null;
   }
-  return new GoogleGenAI({
-    apiKey,
-    httpOptions: {
-      headers: {
-        "User-Agent": "aistudio-build",
-      },
-    },
-  });
+  if (!groqClient) {
+    groqClient = new Groq({ apiKey });
+  }
+  return groqClient;
+};
+
+// Auto-detect best supported model from Groq
+let cachedGroqModel: string | null = null;
+const getWorkingModel = async (groq: Groq): Promise<string> => {
+  if (cachedGroqModel) return cachedGroqModel;
+
+  if (process.env.GROQ_MODEL) {
+    cachedGroqModel = process.env.GROQ_MODEL;
+    return cachedGroqModel;
+  }
+
+  const candidateModels = [
+    "qwen/qwen3.8-27b",
+    "groq/compound-mini",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+  ];
+
+  try {
+    const modelList = await groq.models.list();
+    const availableIds = new Set(modelList.data.map((m) => m.id));
+    for (const cand of candidateModels) {
+      if (availableIds.has(cand)) {
+        cachedGroqModel = cand;
+        return cand;
+      }
+    }
+  } catch (err) {
+    console.warn("Could not list Groq models, falling back to default:", err);
+  }
+
+  cachedGroqModel = "qwen/qwen3.8-27b";
+  return cachedGroqModel;
 };
 
 async function startServer() {
@@ -40,9 +73,9 @@ async function startServer() {
   app.get("/api/health", (req, res) => {
     res.json({
       status: "ok",
-      hasGeminiKey: Boolean(process.env.GEMINI_API_KEY),
-      hasWhatsAppToken: Boolean(process.env.WHATSAPP_API_TOKEN),
+      hasGroqKey: Boolean(process.env.GROQ_API_KEY),
       hasSupabase: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+      hasTelegram: Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID),
       timestamp: new Date().toISOString(),
     });
   });
@@ -131,75 +164,449 @@ async function startServer() {
   });
 
   // ============================================
-  // WhatsApp Business API endpoint
+  // Telegram Bot Notification & Duplicate Prevention
   // ============================================
-  app.post("/api/send-whatsapp", async (req, res) => {
-    try {
-      const { to, message, type } = req.body;
+  const recentSubmissionKeys = new Map<string, number>();
+  const isDuplicateSubmission = (key: string): boolean => {
+    const now = Date.now();
+    const lastTime = recentSubmissionKeys.get(key);
+    if (lastTime && now - lastTime < 15000) {
+      return true;
+    }
+    recentSubmissionKeys.set(key, now);
+    if (recentSubmissionKeys.size > 200) {
+      for (const [k, t] of recentSubmissionKeys.entries()) {
+        if (now - t > 60000) recentSubmissionKeys.delete(k);
+      }
+    }
+    return false;
+  };
 
-      if (!message || typeof message !== "string") {
-        return res.status(400).json({ error: "Message is required" });
+  const escapeHtml = (str?: string | number | null): string => {
+    if (str === undefined || str === null) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  };
+
+  const sendTelegramNotification = async (payload: {
+    submissionType: string;
+    parentName: string;
+    phone: string;
+    email?: string;
+    childName?: string;
+    childAge?: string | number;
+    program?: string;
+    city?: string;
+    preferredDate?: string;
+    preferredTime?: string;
+    experience?: string;
+    investmentBudget?: string;
+    propertyAvailable?: string;
+    message?: string;
+    submittedAt: string;
+  }): Promise<{ sent: boolean; reason?: string }> => {
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    if (!token || !chatId) {
+      console.warn(
+        "[Telegram] Notification skipped: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is not configured in environment."
+      );
+      return { sent: false, reason: "Credentials not configured" };
+    }
+
+    const lines: string[] = [
+      `🦁 <b>New Website Form Submission</b>`,
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `📋 <b>Form Type:</b> ${escapeHtml(payload.submissionType)}`,
+      `👤 <b>Name:</b> ${escapeHtml(payload.parentName)}`,
+      `📞 <b>Phone:</b> <code>${escapeHtml(payload.phone)}</code>`,
+    ];
+
+    if (payload.email) {
+      lines.push(`✉️ <b>Email:</b> ${escapeHtml(payload.email)}`);
+    }
+    if (payload.childName) {
+      lines.push(`👶 <b>Child Name:</b> ${escapeHtml(payload.childName)}`);
+    }
+    if (payload.childAge) {
+      lines.push(`🎂 <b>Child Age / Group:</b> ${escapeHtml(payload.childAge)}`);
+    }
+    if (payload.program) {
+      lines.push(`🎒 <b>Selected Program:</b> ${escapeHtml(payload.program)}`);
+    }
+    if (payload.preferredDate) {
+      lines.push(
+        `📅 <b>Tour Date:</b> ${escapeHtml(payload.preferredDate)} (${escapeHtml(payload.preferredTime || "Anytime")})`
+      );
+    }
+    if (payload.city) {
+      lines.push(`📍 <b>Campus / City:</b> ${escapeHtml(payload.city)}`);
+    }
+    if (payload.investmentBudget) {
+      lines.push(`💼 <b>Investment Budget:</b> ${escapeHtml(payload.investmentBudget)}`);
+    }
+    if (payload.experience) {
+      lines.push(`🎓 <b>Experience:</b> ${escapeHtml(payload.experience)}`);
+    }
+    if (payload.propertyAvailable) {
+      lines.push(`🏢 <b>Property Available:</b> ${escapeHtml(payload.propertyAvailable)}`);
+    }
+    if (payload.message) {
+      lines.push(`💬 <b>Message:</b>\n<i>${escapeHtml(payload.message)}</i>`);
+    }
+
+    lines.push(`━━━━━━━━━━━━━━━━━━━━━━`);
+    lines.push(`🕒 <b>Date & Time:</b> ${escapeHtml(payload.submittedAt)}`);
+    lines.push(`📌 <b>Status:</b> <code>new</code>`);
+
+    const text = lines.join("\n");
+
+    try {
+      const telegramUrl = `https://api.telegram.org/bot${token}/sendMessage`;
+      const response = await fetch(telegramUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text,
+          parse_mode: "HTML",
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.ok) {
+        console.error(
+          "[Telegram] Telegram API error:",
+          result.description || response.statusText
+        );
+        return { sent: false, reason: result.description || "API returned error" };
       }
 
-      const whatsappToken = process.env.WHATSAPP_API_TOKEN;
-      const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-      const recipientNumber = to || process.env.WHATSAPP_RECIPIENT_NUMBER || "919945531032";
+      return { sent: true };
+    } catch (error: any) {
+      console.error("[Telegram] Network/send error:", error?.message || error);
+      return { sent: false, reason: error?.message || "Network error" };
+    }
+  };
 
-      // If WhatsApp Business API is configured, send automatically
-      if (whatsappToken && phoneNumberId) {
-        const response = await fetch(
-          `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`,
-          {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${whatsappToken}`,
-              "Content-Type": "application/json",
+  // Safe fallback storage buffer in case database is momentarily unavailable
+  const fallbackSubmissionsBuffer: Array<any> = [];
+
+  const saveSubmissionToSupabase = async (submission: {
+    submission_type: string;
+    parent_name: string;
+    phone: string;
+    email?: string | null;
+    child_name?: string | null;
+    child_age?: string | null;
+    program?: string | null;
+    message?: string | null;
+    status: string;
+    created_at: string;
+    metadata?: Record<string, any>;
+  }): Promise<{ savedToSupabase: boolean; recordId?: string | number; tableUsed?: string; error?: string }> => {
+    if (!supabase) {
+      console.warn(
+        "[Supabase] Not configured (SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing). Submission retained in memory buffer."
+      );
+      fallbackSubmissionsBuffer.push(submission);
+      return { savedToSupabase: false, error: "Supabase not configured in environment" };
+    }
+
+    const typeLower = submission.submission_type.toLowerCase();
+
+    try {
+      // 1. Admission Enquiry -> 'admissions' table
+      if (typeLower.includes("admission")) {
+        const parsedAge = submission.child_age
+          ? parseInt(String(submission.child_age).replace(/\D/g, ""), 10) || 3
+          : 3;
+
+        const { data, error } = await supabase
+          .from("admissions")
+          .insert([
+            {
+              parent_name: submission.parent_name,
+              child_name: submission.child_name || "Little Explorer",
+              child_age: parsedAge,
+              phone: submission.phone,
+              email: submission.email || "",
+              program: submission.program || "General",
+              message: submission.message || "",
+              status: "new",
             },
-            body: JSON.stringify({
-              messaging_product: "whatsapp",
-              to: recipientNumber,
-              type: "text",
-              text: {
-                body: message,
-              },
-            }),
-          }
-        );
+          ])
+          .select();
 
-        const result = await response.json();
-
-        if (response.ok) {
-          return res.json({
-            success: true,
-            method: "api",
-            messageId: result.messages?.[0]?.id,
-          });
-        } else {
-          console.error("WhatsApp API Error:", result);
-          // Fall back to redirect method
+        if (!error && data && data.length > 0) {
+          return { savedToSupabase: true, recordId: data[0].id, tableUsed: "admissions" };
+        }
+        if (error) {
+          console.warn("[Supabase] Insert into admissions notice:", error.message);
         }
       }
 
-      // Fallback: Return the WhatsApp URL for client-side redirect
-      const encodedMessage = encodeURIComponent(message);
-      const whatsappUrl = `https://wa.me/${recipientNumber}?text=${encodedMessage}`;
+      // 2. Campus Tour Booking -> 'tour_bookings' table
+      if (typeLower.includes("tour")) {
+        const parsedAge = submission.child_age
+          ? parseInt(String(submission.child_age).replace(/\D/g, ""), 10) || null
+          : null;
+
+        const tourMessage = [
+          submission.child_name ? `Child: ${submission.child_name}` : "",
+          submission.program ? `Program: ${submission.program}` : "",
+          submission.message || "",
+        ]
+          .filter(Boolean)
+          .join(" | ");
+
+        const { data, error } = await supabase
+          .from("tour_bookings")
+          .insert([
+            {
+              parent_name: submission.parent_name,
+              phone: submission.phone,
+              email: submission.email || "",
+              child_age: parsedAge,
+              preferred_date: submission.metadata?.preferredDate || "",
+              preferred_time: submission.metadata?.preferredTime || "",
+              message: tourMessage,
+              status: "new",
+            },
+          ])
+          .select();
+
+        if (!error && data && data.length > 0) {
+          return { savedToSupabase: true, recordId: data[0].id, tableUsed: "tour_bookings" };
+        }
+        if (error) {
+          console.warn("[Supabase] Insert into tour_bookings notice:", error.message);
+        }
+      }
+
+      // 3. Franchise Application -> 'enquiries' table (or contact / general enquiry)
+      if (typeLower.includes("franchise")) {
+        const franchiseDetails = [
+          submission.metadata?.city ? `City: ${submission.metadata.city}` : "",
+          submission.metadata?.experience ? `Experience: ${submission.metadata.experience}` : "",
+          submission.metadata?.investmentBudget ? `Budget: ${submission.metadata.investmentBudget}` : "",
+          submission.metadata?.propertyAvailable ? `Property: ${submission.metadata.propertyAvailable}` : "",
+          submission.message ? `Notes: ${submission.message}` : "",
+        ]
+          .filter(Boolean)
+          .join("\n");
+
+        const { data, error } = await supabase
+          .from("enquiries")
+          .insert([
+            {
+              name: submission.parent_name,
+              phone: submission.phone,
+              email: submission.email || "",
+              subject: `Franchise Application${submission.metadata?.city ? ` - ${submission.metadata.city}` : ""}`,
+              message: franchiseDetails || "Franchise partner application",
+              source: "Franchise Page",
+              status: "new",
+            },
+          ])
+          .select();
+
+        if (!error && data && data.length > 0) {
+          return { savedToSupabase: true, recordId: data[0].id, tableUsed: "enquiries" };
+        }
+        if (error) {
+          console.warn("[Supabase] Insert into enquiries notice:", error.message);
+        }
+      }
+
+      // 4. Contact Enquiry & all other enquiries -> 'enquiries' table
+      const contactDetails = [
+        submission.child_age ? `Child Age / Group: ${submission.child_age}` : "",
+        submission.metadata?.city ? `Campus / Locality: ${submission.metadata.city}` : "",
+        submission.message || "",
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      const { data: enqData, error: enqError } = await supabase
+        .from("enquiries")
+        .insert([
+          {
+            name: submission.parent_name,
+            phone: submission.phone,
+            email: submission.email || "",
+            subject: submission.metadata?.enquiryType || submission.submission_type || "Contact Enquiry",
+            message: contactDetails || "General enquiry",
+            source: "Contact Form",
+            status: "new",
+          },
+        ])
+        .select();
+
+      if (!enqError && enqData && enqData.length > 0) {
+        return { savedToSupabase: true, recordId: enqData[0].id, tableUsed: "enquiries" };
+      }
+
+      if (enqError) {
+        console.warn("[Supabase] Insert into enquiries failed:", enqError.message);
+        fallbackSubmissionsBuffer.push(submission);
+        return { savedToSupabase: false, error: enqError.message };
+      }
+
+      return { savedToSupabase: true };
+    } catch (err: any) {
+      console.error("[Supabase] Unexpected error saving submission:", err?.message || err);
+      fallbackSubmissionsBuffer.push(submission);
+      return { savedToSupabase: false, error: err?.message || "Insert failed" };
+    }
+  };
+
+  // ============================================
+  // Unified Form Submission API (Supabase + Telegram)
+  // Supports: Admissions, Enquiries, Book-a-Tour, Franchise, Contact
+  // ============================================
+  const handleFormSubmission = async (req: express.Request, res: express.Response) => {
+    try {
+      const {
+        type = "enquiry",
+        parentName,
+        name,
+        phone,
+        email,
+        childName,
+        childAge,
+        program,
+        city,
+        preferredCampus,
+        preferredDate,
+        preferredTime,
+        experience,
+        investmentBudget,
+        propertyAvailable,
+        enquiryType,
+        message,
+        metadata = {},
+      } = req.body;
+
+      const resolvedName = (parentName || name || "").trim();
+      const resolvedPhone = (phone || "").trim();
+
+      // Validation
+      if (!resolvedName) {
+        return res.status(400).json({ success: false, error: "Name is required." });
+      }
+      if (!resolvedPhone || resolvedPhone.length < 7) {
+        return res.status(400).json({ success: false, error: "A valid phone number is required." });
+      }
+
+      // Normalize human-readable form type
+      const normalizedType = (() => {
+        const t = String(type).toLowerCase();
+        if (t.includes("admission")) return "Admission Enquiry";
+        if (t.includes("tour")) return "Campus Tour Booking";
+        if (t.includes("franchise")) return "Franchise Application";
+        if (t.includes("contact")) return "Contact Enquiry";
+        if (enquiryType) return String(enquiryType);
+        return "Website Enquiry";
+      })();
+
+      // Duplicate prevention (15-second debounce)
+      const dedupKey = `${normalizedType}:${resolvedPhone}:${resolvedName.toLowerCase()}`;
+      if (isDuplicateSubmission(dedupKey)) {
+        return res.json({
+          success: true,
+          message: "Thank you! We have already received your submission.",
+          duplicate: true,
+        });
+      }
+
+      const submittedAt = new Date().toISOString();
+      const formattedTimestamp = new Date().toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+
+      const submissionRecord = {
+        submission_type: normalizedType,
+        parent_name: resolvedName,
+        phone: resolvedPhone,
+        email: email ? String(email).trim() : null,
+        child_name: childName ? String(childName).trim() : null,
+        child_age: childAge ? String(childAge).trim() : null,
+        program: program ? String(program).trim() : null,
+        message: message ? String(message).trim() : null,
+        status: "new",
+        created_at: submittedAt,
+        metadata: {
+          ...metadata,
+          city: city || preferredCampus || null,
+          preferredDate: preferredDate || null,
+          preferredTime: preferredTime || null,
+          experience: experience || null,
+          investmentBudget: investmentBudget || null,
+          propertyAvailable: propertyAvailable || null,
+          enquiryType: enquiryType || null,
+        },
+      };
+
+      // 1. Save to Supabase first
+      const supabaseResult = await saveSubmissionToSupabase(submissionRecord);
+
+      // 2. Send Telegram notification (does not break submission if Telegram fails or unconfigured)
+      const telegramResult = await sendTelegramNotification({
+        submissionType: normalizedType,
+        parentName: resolvedName,
+        phone: resolvedPhone,
+        email: email || undefined,
+        childName: childName || undefined,
+        childAge: childAge || undefined,
+        program: program || undefined,
+        city: city || preferredCampus || undefined,
+        preferredDate: preferredDate || undefined,
+        preferredTime: preferredTime || undefined,
+        experience: experience || undefined,
+        investmentBudget: investmentBudget || undefined,
+        propertyAvailable: propertyAvailable || undefined,
+        message: message || undefined,
+        submittedAt: `${formattedTimestamp} IST`,
+      });
 
       return res.json({
         success: true,
-        method: "redirect",
-        url: whatsappUrl,
+        message: "Your submission has been received successfully!",
+        recordId: supabaseResult.recordId || null,
+        savedToSupabase: supabaseResult.savedToSupabase,
+        telegramSent: telegramResult.sent,
       });
     } catch (error: any) {
-      console.error("WhatsApp send error:", error);
-      res.status(500).json({
-        error: "Failed to send message",
-        details: error?.message,
+      console.error("[Form Submission] Unexpected error:", error?.message || error);
+      return res.status(500).json({
+        success: false,
+        error: "An unexpected error occurred while processing your submission. Please try again.",
       });
     }
+  };
+
+  app.post("/api/submit-form", handleFormSubmission);
+  app.post("/api/admissions", handleFormSubmission);
+  app.post("/api/enquiries", handleFormSubmission);
+  app.post("/api/tour-bookings", handleFormSubmission);
+  app.post("/api/franchise", handleFormSubmission);
+
+  // Diagnostic route for admin inspection
+  app.get("/api/submissions/recent", (req, res) => {
+    res.json({
+      bufferedCount: fallbackSubmissionsBuffer.length,
+      recent: fallbackSubmissionsBuffer.slice(-10),
+    });
   });
 
   // ============================================
-  // Gemini API route for "Ask Leo" AI Chatbot
+  // Groq API route for "Ask Leo" AI Chatbot
   // ============================================
   app.post("/api/ask-leo", async (req, res) => {
     try {
@@ -209,10 +616,10 @@ async function startServer() {
         return res.status(400).json({ error: "Message is required" });
       }
 
-      const ai = getGenAI();
+      const groq = getGroqClient();
 
-      if (!ai) {
-        // Fallback intelligent response if API key is not yet set
+      if (!groq) {
+        // Fallback intelligent response if GROQ_API_KEY is not yet configured
         return res.json({
           reply:
             `🦁 *Roar!* Hi there! I'm Leo, your friendly mascot at A Kid's Pre School! ` +
@@ -252,34 +659,47 @@ Guidelines for your response:
 4. Conclude with a helpful call-to-action (e.g. inviting them to book a campus tour or explore our programs).
 `.trim();
 
-      // Format chat messages
-      let promptContents = "";
+      // Build chat messages array for Groq Chat Completion
+      const groqMessages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
+        { role: "system", content: systemInstruction },
+      ];
+
       if (Array.isArray(history) && history.length > 0) {
-        const recentHistory = history.slice(-4).map((h: { sender: string; text: string }) => 
-          `${h.sender === "user" ? "Parent" : "Leo"}: ${h.text}`
-        ).join("\n");
-        promptContents = `${recentHistory}\nParent: ${message}\nLeo:`;
-      } else {
-        promptContents = `Parent: ${message}\nLeo:`;
+        const recentHistory = history.slice(-6);
+        for (const h of recentHistory) {
+          if (h && typeof h.text === "string" && h.text.trim()) {
+            groqMessages.push({
+              role: h.sender === "user" ? "user" : "assistant",
+              content: h.text,
+            });
+          }
+        }
       }
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3.7-flash",
-        contents: promptContents,
-        config: {
-          systemInstruction,
-          temperature: 0.7,
-        },
+      groqMessages.push({
+        role: "user",
+        content: message,
       });
 
-      const replyText = response.text || "🦁 *Roar!* I'd love to help you with that! Let's explore our programs or book a campus tour today!";
+      const model = await getWorkingModel(groq);
+
+      const completion = await groq.chat.completions.create({
+        model,
+        messages: groqMessages,
+        temperature: 0.7,
+        max_tokens: 1024,
+      });
+
+      const replyText =
+        completion.choices[0]?.message?.content?.trim() ||
+        "🦁 *Roar!* I'd love to help you with that! Let's explore our programs or book a campus tour today!";
 
       return res.json({
         reply: replyText,
         isFallback: false,
       });
     } catch (error: any) {
-      console.error("Gemini API Error in /api/ask-leo:", error);
+      console.error("Groq API Error in /api/ask-leo:", error);
       res.json({
         reply:
           "🦁 *Roar!* Leo is right here! Whether you're curious about our admissions, meal menus, or potty training techniques, our teachers and I are ready to welcome your family! Feel free to click 'Book a Tour' to visit our cheerful classrooms!",

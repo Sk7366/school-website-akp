@@ -31,8 +31,34 @@ import { BookTourView } from './views/BookTourView';
 import { KidsZoneView } from './views/KidsZoneView';
 import { CampusesView } from './views/CampusesView';
 
+// Helper functions for safe local storage access (prevents iframe SecurityError crashes)
+function safeGetStorage<T>(key: string, fallback: T): T {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const saved = window.localStorage.getItem(key);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    }
+  } catch (err) {
+    // Storage access is blocked in third-party iframes or privacy mode
+    console.warn(`Storage access blocked for key: ${key}`, err);
+  }
+  return fallback;
+}
+
+function safeSetStorage(key: string, value: any): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    }
+  } catch {
+    // Silently ignore storage failures in restricted iframe environments
+  }
+}
+
 export default function App() {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<PageTab>('home');
   const [isAdmissionModalOpen, setIsAdmissionModalOpen] = useState<boolean>(false);
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
@@ -40,15 +66,7 @@ export default function App() {
 
   // Persistent CRM State
   const [admissionLeads, setAdmissionLeads] = useState<AdmissionLead[]>(() => {
-    const saved = localStorage.getItem('akp_admission_leads');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return [
+    return safeGetStorage<AdmissionLead[]>('akp_admission_leads', [
       {
         id: 'LEAD-101',
         parentName: 'Sarah Jenkins',
@@ -75,19 +93,11 @@ export default function App() {
         createdAt: '2026-03-02 02:40 PM',
         status: 'Tour Scheduled',
       },
-    ];
+    ]);
   });
 
   const [tourBookings, setTourBookings] = useState<TourBooking[]>(() => {
-    const saved = localStorage.getItem('akp_tour_bookings');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return [
+    return safeGetStorage<TourBooking[]>('akp_tour_bookings', [
       {
         id: 'AKP-774921',
         parentName: 'Marcus Chen',
@@ -101,19 +111,11 @@ export default function App() {
         createdAt: '2026-03-02 11:20 AM',
         status: 'Confirmed',
       },
-    ];
+    ]);
   });
 
   const [franchiseApplications, setFranchiseApplications] = useState<FranchiseApplication[]>(() => {
-    const saved = localStorage.getItem('akp_franchise_apps');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return [
+    return safeGetStorage<FranchiseApplication[]>('akp_franchise_apps', [
       {
         id: 'FRAN-501',
         name: 'Elena Rostova',
@@ -127,19 +129,11 @@ export default function App() {
         createdAt: '2026-03-01 04:12 PM',
         status: 'Qualified',
       },
-    ];
+    ]);
   });
 
   const [generalEnquiries, setGeneralEnquiries] = useState<Enquiry[]>(() => {
-    const saved = localStorage.getItem('akp_general_enquiries');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return [
+    return safeGetStorage<Enquiry[]>('akp_general_enquiries', [
       {
         id: 'ENQ-201',
         parentName: 'Daniel Brooks',
@@ -152,45 +146,39 @@ export default function App() {
         createdAt: '2026-03-02 09:00 AM',
         status: 'New',
       },
-    ];
+    ]);
   });
 
   const [testimonials, setTestimonials] = useState<Testimonial[]>(() => {
-    const saved = localStorage.getItem('akp_testimonials');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return INITIAL_TESTIMONIALS;
+    return safeGetStorage<Testimonial[]>('akp_testimonials', INITIAL_TESTIMONIALS);
   });
 
   // Save to localStorage
   useEffect(() => {
-    localStorage.setItem('akp_admission_leads', JSON.stringify(admissionLeads));
+    safeSetStorage('akp_admission_leads', admissionLeads);
   }, [admissionLeads]);
 
   useEffect(() => {
-    localStorage.setItem('akp_tour_bookings', JSON.stringify(tourBookings));
+    safeSetStorage('akp_tour_bookings', tourBookings);
   }, [tourBookings]);
 
   useEffect(() => {
-    localStorage.setItem('akp_franchise_apps', JSON.stringify(franchiseApplications));
+    safeSetStorage('akp_franchise_apps', franchiseApplications);
   }, [franchiseApplications]);
 
   useEffect(() => {
-    localStorage.setItem('akp_general_enquiries', JSON.stringify(generalEnquiries));
+    safeSetStorage('akp_general_enquiries', generalEnquiries);
   }, [generalEnquiries]);
 
   useEffect(() => {
-    localStorage.setItem('akp_testimonials', JSON.stringify(testimonials));
+    safeSetStorage('akp_testimonials', testimonials);
   }, [testimonials]);
 
   const handleNavigate = (tab: PageTab) => {
     setActiveTab(tab);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleSelectProgram = (programId: string) => {
@@ -431,10 +419,10 @@ export default function App() {
       <AdmissionPopup
         isOpen={isAdmissionModalOpen}
         onClose={() => setIsAdmissionModalOpen(false)}
-        onSubmitLead={handleAddAdmissionLead}
+        onSubmitLead={handleAddGeneralEnquiry}
       />
 
-      {/* Floating Action Buttons: WhatsApp / Call & Quick Actions */}
+      {/* Floating Action Buttons: Admissions Hotline & Quick Actions */}
       <FloatingSocials
         onOpenAdmission={() => setIsAdmissionModalOpen(true)}
         onBookTour={() => handleNavigate('book-tour')}

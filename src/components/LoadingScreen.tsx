@@ -25,14 +25,14 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   };
 
   useEffect(() => {
-    // Increment progress smoothly over ~1.6 - 1.8 seconds (30ms * ~55 steps)
+    // Increment progress smoothly over ~800ms
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           return 100;
         }
-        const step = prev < 60 ? 3 : prev < 90 ? 2 : 1;
+        const step = prev < 50 ? 5 : prev < 85 ? 4 : 3;
         const next = prev + step;
         if (next >= 100) {
           clearInterval(interval);
@@ -41,14 +41,14 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
         }
         return next;
       });
-    }, 30);
+    }, 25);
 
-    // Absolute safety fallback timer: unconditionally finish after 2.4 seconds
+    // Absolute safety fallback timer: unconditionally finish after 1.2 seconds
     const safetyTimer = setTimeout(() => {
       clearInterval(interval);
       setProgress(100);
       handleComplete();
-    }, 2400);
+    }, 1200);
 
     return () => {
       clearInterval(interval);

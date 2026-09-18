@@ -22,9 +22,9 @@ import {
   Bus,
   Shield,
   HelpCircle,
+  Loader2,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { WhatsAppConfirmPopup } from '../components/WhatsAppConfirmPopup';
 
 interface ContactViewProps {
   onNavigate: (tab: PageTab) => void;
@@ -48,7 +48,6 @@ export const ContactView: React.FC<ContactViewProps> = ({
   });
   const [submitted, setSubmitted] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
   const faqs = [
@@ -86,87 +85,76 @@ export const ContactView: React.FC<ContactViewProps> = ({
     },
   ];
 
-  const sendWhatsAppMessage = async (data: Record<string, string>) => {
-    const lines = [
-      `*New Contact Enquiry - A Kids Pre School*`,
-      '',
-      `*Name:* ${data.parentName || 'N/A'}`,
-      `*Phone:* ${data.phone || 'N/A'}`,
-      `*Email:* ${data.email || 'N/A'}`,
-      `*Child Age/Program:* ${data.childAge || 'N/A'}`,
-      `*Enquiry Type:* ${data.enquiryType || 'N/A'}`,
-      `*Locality:* ${data.city || 'N/A'}`,
-      data.message ? `*Message:* ${data.message}` : '',
-    ].filter(Boolean).join('\n');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.parentName || !formData.phone || isSending) return;
+
+    setIsSending(true);
 
     try {
-      const response = await fetch('/api/send-whatsapp', {
+      await fetch('/api/submit-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: lines,
           type: 'contact',
+          parentName: formData.parentName,
+          phone: formData.phone,
+          email: formData.email,
+          childAge: formData.childAge,
+          enquiryType: formData.enquiryType,
+          city: formData.city,
+          message: formData.message,
         }),
       });
 
-      const result = await response.json();
+      onSubmitGeneralEnquiry({
+        parentName: formData.parentName,
+        phone: formData.phone,
+        email: formData.email,
+        childAge: formData.childAge,
+        enquiryType: formData.enquiryType,
+        city: formData.city,
+        message: formData.message,
+      });
 
-      if (result.success && result.url) {
-        window.open(result.url, '_blank');
+      setSubmitted(true);
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      } catch {
+        // safe fallback
       }
+
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({
+          parentName: '',
+          phone: '',
+          email: '',
+          childAge: 'Nursery (2.5 – 3.5 Years)',
+          enquiryType: 'General Question',
+          city: 'Main Campus',
+          message: '',
+        });
+      }, 3500);
     } catch (error) {
-      console.error('WhatsApp send error:', error);
-      const encoded = encodeURIComponent(lines);
-      window.open(`https://wa.me/919945531032?text=${encoded}`, '_blank');
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.parentName || !formData.phone) return;
-
-    onSubmitGeneralEnquiry({
-      parentName: formData.parentName,
-      phone: formData.phone,
-      email: formData.email,
-      childAge: formData.childAge,
-      enquiryType: formData.enquiryType,
-      city: formData.city,
-      message: formData.message,
-    });
-
-    setShowConfirm(true);
-  };
-
-  const handleConfirmSend = async () => {
-    setIsSending(true);
-    await sendWhatsAppMessage(formData);
-    setIsSending(false);
-    setShowConfirm(false);
-
-    setSubmitted(true);
-    try {
-      confetti({
-        particleCount: 50,
-        spread: 70,
-        origin: { y: 0.6 },
+      console.error('Contact submission error:', error);
+      onSubmitGeneralEnquiry({
+        parentName: formData.parentName,
+        phone: formData.phone,
+        email: formData.email,
+        childAge: formData.childAge,
+        enquiryType: formData.enquiryType,
+        city: formData.city,
+        message: formData.message,
       });
-    } catch {
-      // safe fallback
+      setSubmitted(true);
+    } finally {
+      setIsSending(false);
     }
-
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        parentName: '',
-        phone: '',
-        email: '',
-        childAge: 'Nursery (2.5 – 3.5 Years)',
-        enquiryType: 'General Question',
-        city: 'Main Campus',
-        message: '',
-      });
-    }, 3500);
   };
 
   return (
@@ -225,22 +213,20 @@ export const ContactView: React.FC<ContactViewProps> = ({
                 </div>
               </div>
 
-              {/* WhatsApp Card */}
+              {/* Admissions Direct Desk Card */}
               <div className="p-5 rounded-3xl bg-[#FFF9EC] border-3 border-[#5BC85A] flex items-start gap-4 shadow-sm">
                 <div className="w-12 h-12 rounded-2xl bg-[#E8F5E9] text-[#2E7D32] flex items-center justify-center shrink-0">
-                  <MessageCircle className="w-6 h-6" />
+                  <Phone className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-heading font-bold text-base text-[#173B5E]">WhatsApp Instant Chat</h4>
+                  <h4 className="font-heading font-bold text-base text-[#173B5E]">Campus Direct Desk</h4>
                   <a
-                    href="https://wa.me/919945531032?text=Hello%20A%20Kid's%20Pre%20School!"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="tel:+919945531032"
                     className="text-sm font-extrabold text-[#2E7D32] hover:underline block mt-0.5"
                   >
-                    +91 9845296096 💬
+                    +91 9945531032 📞
                   </a>
-                  <p className="text-xs text-gray-500 font-medium mt-1">Instant query resolution & brochure</p>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Direct assistance for admissions & tours</p>
                 </div>
               </div>
 
@@ -401,10 +387,20 @@ export const ContactView: React.FC<ContactViewProps> = ({
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 rounded-2xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+                    disabled={isSending}
+                    className="w-full py-3.5 rounded-2xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
                   >
-                    <Send className="w-4 h-4" />
-                    Send Inquiry Now 🦁
+                    {isSending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        SENDING INQUIRY...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        Send Inquiry Now 🦁
+                      </>
+                    )}
                   </button>
                 </form>
               )}
@@ -457,16 +453,6 @@ export const ContactView: React.FC<ContactViewProps> = ({
           </div>
         </div>
       </section>
-
-      {/* WhatsApp Confirmation Popup */}
-      <WhatsAppConfirmPopup
-        isOpen={showConfirm}
-        onClose={() => setShowConfirm(false)}
-        onConfirm={handleConfirmSend}
-        formData={formData}
-        enquiryType="Contact Enquiry"
-        isSending={isSending}
-      />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { AKPLogo, LeoReader, StarDeco, SunshineDeco } from './MascotIcons';
 import { PageTab } from '../types';
-import { Phone, Mail, MapPin, Clock, Heart, MessageCircle, Instagram, Youtube, Facebook } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Heart, Instagram, Youtube, Facebook } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (tab: PageTab) => void;
@@ -40,13 +40,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmissionModal
 
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="https://wa.me/919945531032?text=Hello%20A%20Kid's%20Pre%20School!"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="tel:+919945531032"
                 className="w-9 h-9 rounded-xl bg-[#5BC85A] text-white flex items-center justify-center hover:scale-110 transition-transform"
-                aria-label="WhatsApp"
+                aria-label="Admissions Hotline"
               >
-                <MessageCircle className="w-4 h-4" />
+                <Phone className="w-4 h-4" />
               </a>
               <a
                 href="https://www.instagram.com/a_kids_preschool/"

@@ -33,14 +33,16 @@ import {
 interface ProgramsViewProps {
   onNavigate: (tab: PageTab) => void;
   onOpenAdmissionModal: () => void;
+  selectedProgramId?: string | null;
   onSelectProgram?: (programId: string) => void;
 }
 
 export const ProgramsView: React.FC<ProgramsViewProps> = ({
   onNavigate,
   onOpenAdmissionModal,
+  selectedProgramId: initialProgramId,
 }) => {
-  const [selectedProgramId, setSelectedProgramId] = useState<string>('nursery');
+  const [selectedProgramId, setSelectedProgramId] = useState<string>(initialProgramId || 'nursery');
   const [calculatorAgeYears, setCalculatorAgeYears] = useState<number>(3);
   const [calculatorAgeMonths, setCalculatorAgeMonths] = useState<number>(0);
   const [isBrochureModalOpen, setIsBrochureModalOpen] = useState(false);
@@ -572,7 +574,7 @@ export const ProgramsView: React.FC<ProgramsViewProps> = ({
               </div>
 
               <p>
-                To receive the high-resolution PDF prospectus via WhatsApp or email, please click below to connect with our admissions desk:
+                To receive the high-resolution PDF prospectus directly, please click below to connect with our admissions desk:
               </p>
             </div>
 
@@ -585,7 +587,7 @@ export const ProgramsView: React.FC<ProgramsViewProps> = ({
                 className="flex-1 py-3 rounded-xl bg-[#F4511E] text-white font-heading font-bold text-xs uppercase tracking-wider shadow-md hover:bg-[#E64A19] transition-all flex items-center justify-center gap-2"
               >
                 <Sparkles className="w-4 h-4" />
-                Request PDF on WhatsApp / Email
+                Request PDF Prospectus
               </button>
 
               <button

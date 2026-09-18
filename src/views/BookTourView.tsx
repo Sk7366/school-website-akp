@@ -24,9 +24,9 @@ import {
   Gift,
   ShieldCheck,
   Heart,
+  Loader2,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { WhatsAppConfirmPopup } from '../components/WhatsAppConfirmPopup';
 
 interface BookTourViewProps {
   onNavigate: (tab: PageTab) => void;
@@ -56,7 +56,6 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
   const [message, setMessage] = useState('');
 
   const [confirmedBookingId, setConfirmedBookingId] = useState('');
-  const [showConfirm, setShowConfirm] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
   const timeSlots = [
@@ -71,94 +70,73 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
     setStep(2);
   };
 
-  const handleFinalSubmit = (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!parentName || !phone) return;
+    if (!parentName || !phone || isSending) return;
 
     const bookingId = `AKP-${Math.floor(100000 + Math.random() * 900000)}`;
     setConfirmedBookingId(bookingId);
-
-    onSubmitTourBooking({
-      parentName,
-      phone,
-      email,
-      childName: childName || 'Little Explorer',
-      childAge,
-      program,
-      preferredDate: selectedDate,
-      preferredTime: selectedTimeSlot,
-      message,
-    });
-
-    setShowConfirm(true);
-  };
-
-  const sendWhatsAppMessage = async () => {
-    const lines = [
-      '*New Campus Tour Booking - A Kids Pre School*',
-      '',
-      `*Name:* ${parentName}`,
-      `*Phone:* ${phone}`,
-      `*Email:* ${email || 'N/A'}`,
-      `*Child Name:* ${childName || 'Little Explorer'}`,
-      `*Child Age:* ${childAge}`,
-      `*Program:* ${program}`,
-      `*Preferred Date:* ${selectedDate}`,
-      `*Preferred Time:* ${selectedTimeSlot}`,
-      message ? `*Message:* ${message}` : '',
-    ].filter(Boolean).join('\n');
+    setIsSending(true);
 
     try {
-      const response = await fetch('/api/send-whatsapp', {
+      await fetch('/api/submit-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: lines,
           type: 'tour',
+          parentName,
+          phone,
+          email,
+          childName: childName || 'Little Explorer',
+          childAge,
+          program,
+          preferredDate: selectedDate,
+          preferredTime: selectedTimeSlot,
+          message,
+          metadata: { confirmedBookingId: bookingId },
         }),
       });
 
-      const result = await response.json();
+      onSubmitTourBooking({
+        parentName,
+        phone,
+        email,
+        childName: childName || 'Little Explorer',
+        childAge,
+        program,
+        preferredDate: selectedDate,
+        preferredTime: selectedTimeSlot,
+        message,
+      });
 
-      if (result.success && result.url) {
-        window.open(result.url, '_blank');
+      setStep(3);
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 90,
+          origin: { y: 0.5 },
+          colors: ['#F4511E', '#FFD21F', '#29B6F6', '#5BC85A', '#FF4F6D'],
+        });
+      } catch {
+        // safe fallback
       }
     } catch (error) {
-      console.error('WhatsApp send error:', error);
-      const encoded = encodeURIComponent(lines);
-      window.open(`https://wa.me/919945531032?text=${encoded}`, '_blank');
-    }
-  };
-
-  const handleConfirmSend = async () => {
-    setIsSending(true);
-    await sendWhatsAppMessage();
-    setIsSending(false);
-    setShowConfirm(false);
-
-    setStep(3);
-    try {
-      confetti({
-        particleCount: 80,
-        spread: 90,
-        origin: { y: 0.5 },
-        colors: ['#F4511E', '#FFD21F', '#29B6F6', '#5BC85A', '#FF4F6D'],
+      console.error('Tour submission error:', error);
+      onSubmitTourBooking({
+        parentName,
+        phone,
+        email,
+        childName: childName || 'Little Explorer',
+        childAge,
+        program,
+        preferredDate: selectedDate,
+        preferredTime: selectedTimeSlot,
+        message,
       });
-    } catch {
-      // safe fallback
+      setStep(3);
+    } finally {
+      setIsSending(false);
     }
-  };
-
-  const formData = {
-    parentName,
-    phone,
-    email,
-    childName: childName || 'Little Explorer',
-    childAge,
-    program,
-    preferredDate: selectedDate,
-    preferredTime: selectedTimeSlot,
-    message,
   };
 
   return (
@@ -443,10 +421,20 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
 
                   <button
                     type="submit"
-                    className="px-8 py-3.5 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+                    disabled={isSending}
+                    className="px-8 py-3.5 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-all flex items-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
                   >
-                    <Sparkles className="w-4 h-4" />
-                    Confirm & Generate VIP Pass 🦁
+                    {isSending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Generating VIP Pass...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4" />
+                        Confirm & Generate VIP Pass 🦁
+                      </>
+                    )}
                   </button>
                 </div>
               </form>
@@ -475,7 +463,7 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
                     WE CAN'T WAIT TO MEET YOU! 🦁
                   </h2>
                   <p className="text-sm text-gray-700 font-medium mt-1">
-                    A confirmation SMS & WhatsApp message has been dispatched to <strong>{phone}</strong>.
+                    Our admissions team has received your tour booking and will contact you at <strong>{phone}</strong> to confirm your slot.
                   </p>
                 </div>
 
@@ -593,16 +581,6 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
           </div>
         </div>
       </section>
-
-      {/* WhatsApp Confirmation Popup */}
-      <WhatsAppConfirmPopup
-        isOpen={showConfirm}
-        onClose={() => setShowConfirm(false)}
-        onConfirm={handleConfirmSend}
-        formData={formData}
-        enquiryType="Campus Tour Booking"
-        isSending={isSending}
-      />
     </div>
   );
 };

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { X, Sparkles, CheckCircle2, Phone, Mail, User, MapPin, Send } from 'lucide-react';
+import { X, Sparkles, CheckCircle2, Phone, Mail, User, MapPin, Send, Loader2 } from 'lucide-react';
 import { AKPLogo } from './MascotIcons';
 import { LeoCharacter } from './LeoCharacter';
 import confetti from 'canvas-confetti';
 import { Enquiry } from '../types';
-import { WhatsAppConfirmPopup } from './WhatsAppConfirmPopup';
 
 interface AdmissionPopupProps {
   isOpen: boolean;
@@ -23,96 +22,83 @@ export const AdmissionPopup: React.FC<AdmissionPopupProps> = ({ isOpen, onClose,
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
   if (!isOpen) return null;
 
-  const sendWhatsAppMessage = async (data: Record<string, string>) => {
-    const lines = [
-      `*New Admission Enquiry - A Kids Pre School*`,
-      '',
-      `*Name:* ${data.parentName || 'N/A'}`,
-      `*Phone:* ${data.phone || 'N/A'}`,
-      `*Email:* ${data.email || 'N/A'}`,
-      `*Child Age/Program:* ${data.childAge || 'N/A'}`,
-      `*Enquiry Type:* ${data.enquiryType || 'N/A'}`,
-      `*Locality:* ${data.city || 'N/A'}`,
-      data.message ? `*Message:* ${data.message}` : '',
-    ].filter(Boolean).join('\n');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.parentName || !formData.phone || isSending) return;
+
+    setIsSending(true);
 
     try {
-      const response = await fetch('/api/send-whatsapp', {
+      await fetch('/api/submit-form', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: lines,
           type: 'admission',
+          parentName: formData.parentName,
+          email: formData.email,
+          phone: formData.phone,
+          childAge: formData.childAge,
+          enquiryType: formData.enquiryType,
+          city: formData.city,
+          message: formData.message,
         }),
       });
 
-      const result = await response.json();
+      onSubmitLead({
+        parentName: formData.parentName,
+        email: formData.email,
+        phone: formData.phone,
+        childAge: formData.childAge,
+        enquiryType: formData.enquiryType,
+        city: formData.city,
+        message: formData.message,
+      });
 
-      if (result.success && result.url) {
-        // Fallback to redirect if API not configured
-        window.open(result.url, '_blank');
+      setSubmitted(true);
+      try {
+        confetti({
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#F4511E', '#FFD21F', '#29B6F6', '#FF4F6D'],
+        });
+      } catch {
+        // safe fallback
       }
+
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({
+          parentName: '',
+          email: '',
+          phone: '',
+          childAge: '2.5 Years (Nursery)',
+          enquiryType: 'Admissions 2026-27',
+          city: 'Bengaluru Campus',
+          message: '',
+        });
+        onClose();
+      }, 3500);
     } catch (error) {
-      console.error('WhatsApp send error:', error);
-      // Fallback to direct redirect
-      const encoded = encodeURIComponent(lines);
-      window.open(`https://wa.me/919945531032?text=${encoded}`, '_blank');
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.parentName || !formData.phone) return;
-
-    onSubmitLead({
-      parentName: formData.parentName,
-      email: formData.email,
-      phone: formData.phone,
-      childAge: formData.childAge,
-      enquiryType: formData.enquiryType,
-      city: formData.city,
-      message: formData.message,
-    });
-
-    setShowConfirm(true);
-  };
-
-  const handleConfirmSend = async () => {
-    setIsSending(true);
-    await sendWhatsAppMessage(formData);
-    setIsSending(false);
-    setShowConfirm(false);
-
-    setSubmitted(true);
-    try {
-      confetti({
-        particleCount: 60,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#F4511E', '#FFD21F', '#29B6F6', '#FF4F6D'],
+      console.error('Admission submission error:', error);
+      // Still acknowledge parent submission locally
+      onSubmitLead({
+        parentName: formData.parentName,
+        email: formData.email,
+        phone: formData.phone,
+        childAge: formData.childAge,
+        enquiryType: formData.enquiryType,
+        city: formData.city,
+        message: formData.message,
       });
-    } catch {
-      // safe fallback
+      setSubmitted(true);
+    } finally {
+      setIsSending(false);
     }
-
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        parentName: '',
-        email: '',
-        phone: '',
-        childAge: '2.5 Years (Nursery)',
-        enquiryType: 'Admissions 2026-27',
-        city: 'Bengaluru Campus',
-        message: '',
-      });
-      onClose();
-    }, 2800);
   };
 
   return (
@@ -318,26 +304,26 @@ export const AdmissionPopup: React.FC<AdmissionPopupProps> = ({ isOpen, onClose,
                 <button
                   id="submit-admission-popup-btn"
                   type="submit"
-                  className="w-full py-3 px-6 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-bold text-base shadow-lg shadow-[#F4511E]/30 flex items-center justify-center gap-2 transform active:scale-95 transition-all mt-2 cursor-pointer"
+                  disabled={isSending}
+                  className="w-full py-3 px-6 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-bold text-base shadow-lg shadow-[#F4511E]/30 flex items-center justify-center gap-2 transform active:scale-95 transition-all mt-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-4 h-4" />
-                  SEND ENQUIRY
+                  {isSending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      SENDING...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      SEND ENQUIRY
+                    </>
+                  )}
                 </button>
               </form>
             )}
           </div>
         </div>
       </div>
-
-      {/* WhatsApp Confirmation Popup */}
-      <WhatsAppConfirmPopup
-        isOpen={showConfirm}
-        onClose={() => setShowConfirm(false)}
-        onConfirm={handleConfirmSend}
-        formData={formData}
-        enquiryType="Admission Enquiry"
-        isSending={isSending}
-      />
     </>
   );
 };

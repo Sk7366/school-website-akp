@@ -28,6 +28,7 @@ import { Calendar, Sparkles, ArrowRight, Play, CircleCheck as CheckCircle2, Shie
 interface HomeViewProps {
   onNavigate: (tab: PageTab) => void;
   onOpenAdmissionModal: () => void;
+  onSelectProgram?: (programId: string) => void;
   onSelectBlogPost?: (postId: string) => void;
 }
 
