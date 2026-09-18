@@ -270,19 +270,19 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FFF9EC] text-[#173B5E] antialiased selection:bg-[#FFD21F] selection:text-[#173B5E]">
+    <div className="min-h-screen w-full overflow-x-hidden flex flex-col bg-[#FFF9EC] text-[#173B5E] antialiased selection:bg-[#FFD21F] selection:text-[#173B5E]">
       {/* Interactive Mascot Initial Loading Screen */}
       {isLoading && <LoadingScreen onFinishLoading={() => setIsLoading(false)} />}
 
       {/* Top Admissions Announcement Ribbon */}
-      <div className="bg-[#173B5E] text-white py-2 px-4 text-center text-xs font-bold border-b border-[#FFD21F]/30 flex items-center justify-center gap-2">
+      <div className="bg-[#173B5E] text-white py-2 px-3 sm:px-4 text-center text-xs font-bold border-b border-[#FFD21F]/30 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 w-full">
         <span>🦁</span>
-        <span>
-          <strong>Admissions Open for Academic Year 2026–27!</strong> Limited seats across Playgroup, Nursery, & KG batches.
+        <span className="truncate max-w-[260px] xs:max-w-none">
+          <strong>Admissions Open for Academic Year 2026–27!</strong> <span className="hidden sm:inline">Limited seats across Playgroup, Nursery, & KG batches.</span>
         </span>
         <button
           onClick={() => setIsAdmissionModalOpen(true)}
-          className="underline text-[#FFD21F] hover:text-[#FF8A3D] font-extrabold ml-1 cursor-pointer"
+          className="underline text-[#FFD21F] hover:text-[#FF8A3D] font-extrabold ml-1 cursor-pointer whitespace-nowrap"
         >
           Apply Now →
         </button>

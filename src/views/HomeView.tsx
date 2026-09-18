@@ -143,7 +143,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       {/* ========================================================================= */}
       <section
         id="hero-section"
-        className="relative text-white pt-10 sm:pt-16 pb-20 sm:pb-28 overflow-hidden min-h-[520px] sm:min-h-[600px] lg:min-h-[650px]"
+        className="relative text-white pt-8 sm:pt-16 pb-16 sm:pb-28 overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[650px] flex flex-col justify-center"
       >
         {/* Slideshow Background */}
         <div className="absolute inset-0 z-0">
@@ -151,96 +151,98 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-[#173B5E]/70 z-[1]" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             {/* Left Content Column (7 cols) */}
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+            <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-center lg:text-left">
               {/* Admissions Open Capsule */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border-2 border-[#FFD21F]/40 shadow-sm">
-                <span className="font-heading font-extrabold text-xs sm:text-sm text-[#FFD21F] uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border-2 border-[#FFD21F]/40 shadow-sm max-w-full">
+                <span className="font-heading font-extrabold text-[11px] xs:text-xs sm:text-sm text-[#FFD21F] uppercase tracking-wider truncate">
                   🦁 Admissions Open for 2026–27 Academic Year
                 </span>
               </div>
 
               {/* Striking Headline */}
-              <h1 className="font-heading font-black text-4xl sm:text-6xl xl:text-7xl text-white tracking-tight leading-[1.08]">
+              <h1 className="font-heading font-black text-3xl xs:text-4xl sm:text-6xl xl:text-7xl text-white tracking-tight leading-[1.1] sm:leading-[1.08] break-words">
                 BIG DREAMS <br />
                 <span className="text-[#FFD21F] drop-shadow-md">START SMALL.</span>
               </h1>
 
               {/* Supporting Copy */}
-              <p className="text-white/90 text-lg sm:text-xl font-medium max-w-2xl leading-relaxed mx-auto lg:mx-0">
+              <p className="text-white/90 text-sm sm:text-lg xl:text-xl font-medium max-w-2xl leading-relaxed mx-auto lg:mx-0">
                 A joyful digital and physical world where little learners <strong className="text-[#5ED7E8]">explore</strong>, <strong className="text-[#FFD21F]">create</strong>, <strong className="text-[#FF4F6D]">discover</strong> and <strong className="text-[#5BC85A]">grow</strong> — guided by our friendly lion mascot Leo.
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
                 {/* Primary CTA: BOOK A TOUR */}
                 <button
                   id="hero-book-tour-btn"
                   onClick={() => onNavigate('book-tour')}
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-black text-base sm:text-lg tracking-wide shadow-xl shadow-[#F4511E]/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 border-2 border-[#FF8A3D]"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-black text-sm sm:text-base tracking-wide shadow-xl shadow-[#F4511E]/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 border-2 border-[#FF8A3D]"
                 >
-                  <Calendar className="w-5 h-5" />
-                  BOOK A CAMPUS TOUR
+                  <Calendar className="w-5 h-5 shrink-0" />
+                  <span>BOOK A CAMPUS TOUR</span>
                 </button>
 
                 {/* Secondary CTA: EXPLORE PROGRAMS */}
                 <button
                   id="hero-explore-programs-btn"
                   onClick={() => onNavigate('programs')}
-                  className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-[#FFD21F] hover:bg-[#FFC400] text-[#173B5E] font-heading font-black text-base sm:text-lg tracking-wide shadow-lg shadow-yellow-500/20 hover:-translate-y-1 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                  className="w-full sm:w-auto px-6 sm:px-7 py-3.5 sm:py-4 rounded-2xl bg-[#FFD21F] hover:bg-[#FFC400] text-[#173B5E] font-heading font-black text-sm sm:text-base tracking-wide shadow-lg shadow-yellow-500/20 hover:-translate-y-1 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                 >
-                  <Sparkles className="w-5 h-5 text-[#F4511E]" />
-                  EXPLORE PROGRAMS
+                  <Sparkles className="w-5 h-5 text-[#F4511E] shrink-0" />
+                  <span>EXPLORE PROGRAMS</span>
                 </button>
               </div>
 
               {/* Key Trust Metrics */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-white/15">
-                <div className="bg-white/10 backdrop-blur-xs p-3 rounded-xl border border-white/10 text-center sm:text-left">
-                  <div className="font-heading font-extrabold text-lg text-[#FFD21F]">1:8 Ratio</div>
-                  <div className="text-[11px] text-white/80 font-medium">Individual Attention</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-4 sm:pt-6 border-t border-white/15">
+                <div className="bg-white/10 backdrop-blur-xs p-2.5 sm:p-3 rounded-xl border border-white/10 text-center sm:text-left">
+                  <div className="font-heading font-extrabold text-base sm:text-lg text-[#FFD21F]">1:8 Ratio</div>
+                  <div className="text-[10px] sm:text-[11px] text-white/80 font-medium">Individual Attention</div>
                 </div>
-                <div className="bg-white/10 backdrop-blur-xs p-3 rounded-xl border border-white/10 text-center sm:text-left">
-                  <div className="font-heading font-extrabold text-lg text-[#5ED7E8]">100% Safe</div>
-                  <div className="text-[11px] text-white/80 font-medium">CCTV & Verified Care</div>
+                <div className="bg-white/10 backdrop-blur-xs p-2.5 sm:p-3 rounded-xl border border-white/10 text-center sm:text-left">
+                  <div className="font-heading font-extrabold text-base sm:text-lg text-[#5ED7E8]">100% Safe</div>
+                  <div className="text-[10px] sm:text-[11px] text-white/80 font-medium">CCTV & Verified Care</div>
                 </div>
-                <div className="bg-white/10 backdrop-blur-xs p-3 rounded-xl border border-white/10 text-center sm:text-left">
-                  <div className="font-heading font-extrabold text-lg text-[#FF4F6D]">STEM & Art</div>
-                  <div className="text-[11px] text-white/80 font-medium">Play-Based Curriculum</div>
+                <div className="bg-white/10 backdrop-blur-xs p-2.5 sm:p-3 rounded-xl border border-white/10 text-center sm:text-left">
+                  <div className="font-heading font-extrabold text-base sm:text-lg text-[#FF4F6D]">STEM & Art</div>
+                  <div className="text-[10px] sm:text-[11px] text-white/80 font-medium">Play-Based Curriculum</div>
                 </div>
-                <div className="bg-white/10 backdrop-blur-xs p-3 rounded-xl border border-white/10 text-center sm:text-left">
-                  <div className="font-heading font-extrabold text-lg text-[#5BC85A]">Ages 1.5–6</div>
-                  <div className="text-[11px] text-white/80 font-medium">Playgroup to Senior KG</div>
+                <div className="bg-white/10 backdrop-blur-xs p-2.5 sm:p-3 rounded-xl border border-white/10 text-center sm:text-left">
+                  <div className="font-heading font-extrabold text-base sm:text-lg text-[#5BC85A]">Ages 1.5–6</div>
+                  <div className="text-[10px] sm:text-[11px] text-white/80 font-medium">Playgroup to Senior KG</div>
                 </div>
               </div>
             </div>
 
             {/* Right Mascot Hero Integration (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col items-center justify-center relative pt-6 lg:pt-0">
+            <div className="lg:col-span-5 flex flex-col items-center justify-center relative pt-4 sm:pt-6 lg:pt-0 max-w-full">
               {/* Natural environment grounding & Leo character */}
-              <div className="relative flex flex-col items-center">
+              <div className="relative flex flex-col items-center max-w-full">
                 {/* Subtle soft ambient light glow behind Leo */}
-                <div className="absolute w-72 h-72 sm:w-80 sm:h-80 bg-gradient-to-tr from-[#FFD21F]/20 to-[#F4511E]/20 rounded-full blur-2xl pointer-events-none -z-10" />
+                <div className="absolute w-56 h-56 sm:w-80 sm:h-80 bg-gradient-to-tr from-[#FFD21F]/20 to-[#F4511E]/20 rounded-full blur-2xl pointer-events-none -z-10" />
 
                 {/* Leo Character in Welcome State with Intro Speech */}
-                <LeoCharacter
-                  state="welcome"
-                  size={310}
-                  autoDismissIntro={true}
-                  introDurationMs={6500}
-                  bubblePlacement="auto"
-                  showActions={true}
-                  interactive={true}
-                  onNavigate={onNavigate}
-                  onOpenAdmission={onOpenAdmissionModal}
-                />
+                <div className="w-[240px] xs:w-[270px] sm:w-[310px] max-w-full flex justify-center">
+                  <LeoCharacter
+                    state="welcome"
+                    size={300}
+                    autoDismissIntro={true}
+                    introDurationMs={6500}
+                    bubblePlacement="auto"
+                    showActions={true}
+                    interactive={true}
+                    onNavigate={onNavigate}
+                    onOpenAdmission={onOpenAdmissionModal}
+                  />
+                </div>
 
                 {/* Floating Trust Badge standing beside Leo */}
-                <div className="mt-2 bg-[#FFD21F] text-[#173B5E] px-4 py-2 rounded-2xl shadow-xl border-2 border-white font-heading font-black text-xs sm:text-sm flex items-center gap-2 animate-float-reverse z-10">
-                  <Award className="w-4 h-4 text-[#F4511E]" />
-                  <span>Ranked #1 Joyful Play Learning</span>
+                <div className="mt-2 bg-[#FFD21F] text-[#173B5E] px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl shadow-xl border-2 border-white font-heading font-black text-xs sm:text-sm flex items-center gap-2 animate-float-reverse z-10 max-w-full">
+                  <Award className="w-4 h-4 text-[#F4511E] shrink-0" />
+                  <span className="truncate">Ranked #1 Joyful Play Learning</span>
                 </div>
               </div>
             </div>
@@ -378,9 +380,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
 
           {/* Interactive World Grid: 6 Switcher Cards (Left) & Active Mascot Showcase (Right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#FFF9EC] p-6 sm:p-10 rounded-3xl border-4 border-[#FFD21F] shadow-xl overflow-visible">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center bg-[#FFF9EC] p-4 sm:p-8 lg:p-10 rounded-3xl border-4 border-[#FFD21F] shadow-xl overflow-hidden sm:overflow-visible">
             {/* 6 Interactive Selector Cards (7 cols) */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
               {leoPersonas.map((persona) => {
                 const isSelected = activeLeoPersona === persona.id;
                 return (
@@ -388,9 +390,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     key={persona.id}
                     id={`meet-leo-tab-${persona.id}`}
                     onClick={() => setActiveLeoPersona(persona.id as any)}
-                    className={`p-4 rounded-2xl text-left transition-all duration-300 border-3 cursor-pointer flex items-start gap-3 relative ${
+                    className={`p-3.5 sm:p-4 rounded-2xl text-left transition-all duration-300 border-3 cursor-pointer flex items-start gap-3 relative ${
                       isSelected
-                        ? 'bg-white shadow-lg scale-[1.02]'
+                        ? 'bg-white shadow-lg scale-[1.01] sm:scale-[1.02]'
                         : 'bg-white/70 hover:bg-white hover:shadow-md'
                     }`}
                     style={{
@@ -407,7 +409,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <span
                         className="text-[10px] font-extrabold uppercase tracking-wider block"
                         style={{ color: persona.color }}
@@ -431,7 +433,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
 
             {/* Active Persona Showcase (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col items-center text-center p-6 sm:p-8 bg-white rounded-3xl border-3 shadow-md relative overflow-visible z-20"
+            <div className="lg:col-span-5 flex flex-col items-center text-center p-5 sm:p-8 bg-white rounded-3xl border-3 shadow-md relative overflow-visible z-20 w-full"
               style={{ borderColor: currentPersona.color }}
             >
               {/* Tag Pill */}
@@ -443,40 +445,42 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
 
               {/* Dynamic Interactive Mascot Showcase with matching Original Leo Image */}
-              <div className="my-2">
-                <LeoCharacter
-                  state={
-                    activeLeoPersona === 'teacher'
-                      ? 'learning'
-                      : activeLeoPersona === 'super'
-                      ? 'excited'
-                      : activeLeoPersona === 'artist'
-                      ? 'art'
-                      : activeLeoPersona === 'reader'
-                      ? 'reading'
-                      : activeLeoPersona === 'music'
-                      ? 'music'
-                      : 'calm'
-                  }
-                  size={240}
-                  message={`Hi! I'm ${currentPersona.role}! 🦁`}
-                  subMessage={currentPersona.desc}
-                  showActions={true}
-                  onNavigate={onNavigate}
-                  onOpenAdmission={onOpenAdmissionModal}
-                />
+              <div className="my-2 w-full flex justify-center">
+                <div className="w-[200px] xs:w-[220px] sm:w-[240px] max-w-full">
+                  <LeoCharacter
+                    state={
+                      activeLeoPersona === 'teacher'
+                        ? 'learning'
+                        : activeLeoPersona === 'super'
+                        ? 'excited'
+                        : activeLeoPersona === 'artist'
+                        ? 'art'
+                        : activeLeoPersona === 'reader'
+                        ? 'reading'
+                        : activeLeoPersona === 'music'
+                        ? 'music'
+                        : 'calm'
+                    }
+                    size={240}
+                    message={`Hi! I'm ${currentPersona.role}! 🦁`}
+                    subMessage={currentPersona.desc}
+                    showActions={true}
+                    onNavigate={onNavigate}
+                    onOpenAdmission={onOpenAdmissionModal}
+                  />
+                </div>
               </div>
 
-              <h4 className="font-heading font-black text-2xl text-[#173B5E] mb-2">
+              <h4 className="font-heading font-black text-xl sm:text-2xl text-[#173B5E] mb-1 sm:mb-2">
                 {currentPersona.title}
               </h4>
-              <p className="text-sm text-gray-600 font-medium leading-relaxed max-w-sm mb-4">
+              <p className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed max-w-sm mb-4">
                 {currentPersona.desc}
               </p>
 
               <button
                 onClick={() => onNavigate('activities')}
-                className="px-5 py-2 rounded-xl text-white font-heading font-bold text-xs tracking-wider uppercase shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                className="px-5 py-2.5 rounded-xl text-white font-heading font-bold text-xs tracking-wider uppercase shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
                 style={{ backgroundColor: currentPersona.color }}
               >
                 Explore {currentPersona.badge} →

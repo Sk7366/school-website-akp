@@ -56,17 +56,17 @@ export const AKPLogo: React.FC<{
       </div>
 
       {showText && (
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1.5 leading-tight">
-            <span className="font-heading font-black text-xl sm:text-2xl text-[#F4511E] tracking-tight">
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 leading-tight whitespace-nowrap">
+            <span className="font-heading font-black text-lg xs:text-xl sm:text-2xl text-[#F4511E] tracking-tight">
               A KID’S
             </span>
-            <span className="font-heading font-extrabold text-xl sm:text-2xl text-[#173B5E]">
+            <span className="font-heading font-extrabold text-lg xs:text-xl sm:text-2xl text-[#173B5E]">
               PRE SCHOOL
             </span>
           </div>
-          <span className="text-[11px] font-bold text-[#FF8A3D] tracking-wider uppercase flex items-center gap-1">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#FFD21F]"></span>
+          <span className="text-[10px] sm:text-[11px] font-bold text-[#FF8A3D] tracking-wider uppercase flex items-center gap-1 truncate">
+            <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#FFD21F] shrink-0"></span>
             Where Little Minds Roar &amp; Grow
           </span>
         </div>

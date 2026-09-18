@@ -1,11 +1,21 @@
 @import "tailwindcss";
 
 @layer base {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+  }
+
   body {
     font-family: 'Nunito', system-ui, -apple-system, sans-serif;
     background-color: #FFF9EC;
     color: #173B5E;
-    overflow-x: hidden;
+  }
+
+  img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
   }
 
   h1, h2, h3, h4, h5, h6, .font-heading {

@@ -417,14 +417,15 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
         onClick={handleCharacterClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`${config.motionClass} relative transition-all duration-300 transform-gpu cursor-pointer group flex items-center justify-center ${
+        className={`${config.motionClass} relative transition-all duration-300 transform-gpu cursor-pointer group flex items-center justify-center max-w-full ${
           isHovered ? 'scale-105 -translate-y-1 drop-shadow-2xl' : 'drop-shadow-lg'
         }`}
         style={{
-          width: typeof size === 'number' ? `${size}px` : size,
-          height: typeof size === 'number' ? `${size}px` : size,
-          minWidth: typeof size === 'number' ? `${size}px` : size,
-          minHeight: typeof size === 'number' ? `${size}px` : size,
+          width: typeof size === 'number' ? `min(100%, ${size}px)` : size,
+          height: typeof size === 'number' ? `min(100%, ${size}px)` : size,
+          maxWidth: typeof size === 'number' ? `${size}px` : size,
+          maxHeight: typeof size === 'number' ? `${size}px` : size,
+          aspectRatio: '1 / 1',
         }}
         title={interactive ? 'Click Leo to explore with your preschool guide!' : config.alt}
         role={interactive ? 'button' : 'img'}

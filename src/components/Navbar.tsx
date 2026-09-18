@@ -83,14 +83,14 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b-2 border-[#FFD21F]/50 shadow-sm transition-all duration-300">
       {/* Top micro-announcement bar with quick admissions notice */}
-      <div className="bg-[#173B5E] text-white text-[11px] sm:text-xs py-1.5 px-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-between">
-          <div className="flex items-center gap-2 font-semibold">
-            <span className="text-[#FFD21F] font-bold">Admissions Open 2026–27:</span>
-            <span className="text-white/90">Playgroup, Nursery, Junior & Senior KG, Day Care</span>
+      <div className="bg-[#173B5E] text-white text-[11px] sm:text-xs py-1.5 px-3 sm:px-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 max-w-7xl mx-auto w-full">
+          <div className="flex items-center gap-1.5 sm:gap-2 font-semibold min-w-0">
+            <span className="text-[#FFD21F] font-bold shrink-0">Admissions Open 2026–27:</span>
+            <span className="text-white/90 truncate sm:overflow-visible sm:whitespace-normal">Playgroup, Nursery, KG, Day Care</span>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4 text-xs">
+          <div className="flex items-center gap-2.5 sm:gap-4 text-xs shrink-0 ml-auto">
             {/* Quick Link Pills in top bar */}
             <button
               onClick={() => handleNavClick('kids-zone')}
