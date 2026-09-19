@@ -81,11 +81,14 @@ async function startServer() {
   });
 
   // ============================================
-  // TEST ENDPOINT: Supabase RLS & Connection
+  // TEST ENDPOINT: Supabase RLS & Connection (Development only)
   // ============================================
   app.get("/api/test-supabase", async (req, res) => {
+    if (process.env.NODE_ENV === "production") {
+      return res.status(404).json({ error: "Not found" });
+    }
     if (!supabase) {
-      return res.json({ error: "Supabase not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env" });
+      return res.status(503).json({ error: "Database client not initialized" });
     }
     try {
       // Test 1: Insert into admissions (should work with service_role)
@@ -103,10 +106,9 @@ async function startServer() {
         .select();
       
       if (admissionError) {
-        return res.json({ 
+        return res.status(500).json({ 
           admissions: "FAILED", 
-          error: admissionError.message,
-          hint: "Check if RLS policies are set up correctly"
+          error: "Insert verification failed"
         });
       }
       
@@ -118,9 +120,9 @@ async function startServer() {
         .limit(5);
       
       if (galleryError) {
-        return res.json({ 
+        return res.status(500).json({ 
           gallery: "FAILED", 
-          error: galleryError.message 
+          error: "Gallery verification failed" 
         });
       }
       
@@ -132,9 +134,9 @@ async function startServer() {
         .limit(3);
       
       if (articlesError) {
-        return res.json({ 
+        return res.status(500).json({ 
           articles: "FAILED", 
-          error: articlesError.message 
+          error: "Articles verification failed" 
         });
       }
       
@@ -152,13 +154,13 @@ async function startServer() {
         galleryCount: galleryData?.length || 0,
         articles: "SUCCESS",
         articlesCount: articlesData?.length || 0,
-        message: "✅ Supabase connection and RLS policies are working correctly!",
+        message: "Supabase connection and verification completed successfully",
         timestamp: new Date().toISOString()
       });
     } catch (error: any) {
+      console.error("[Supabase Test Error]", error);
       res.status(500).json({ 
-        error: error.message,
-        hint: "Check your .env file for SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY"
+        error: "Verification failed"
       });
     }
   });
@@ -523,16 +525,19 @@ async function startServer() {
         enquiryType,
         message,
         metadata = {},
-      } = req.body;
+      } = (req.body && typeof req.body === "object") ? req.body : {};
 
-      const resolvedName = (parentName || name || "").trim();
-      const resolvedPhone = (phone || "").trim();
+      const resolvedName = String(parentName || name || "").trim();
+      const resolvedPhone = String(phone || "").trim();
 
       // Validation
       if (!resolvedName) {
         return res.status(400).json({ success: false, error: "Name is required." });
       }
-      if (!resolvedPhone || resolvedPhone.length < 7) {
+      if (resolvedName.length > 200) {
+        return res.status(400).json({ success: false, error: "Name is too long." });
+      }
+      if (!resolvedPhone || resolvedPhone.length < 7 || resolvedPhone.length > 30) {
         return res.status(400).json({ success: false, error: "A valid phone number is required." });
       }
 
@@ -631,11 +636,10 @@ async function startServer() {
   app.post("/api/tour-bookings", handleFormSubmission);
   app.post("/api/franchise", handleFormSubmission);
 
-  // Diagnostic route for admin inspection
+  // Diagnostic route for monitoring buffer health (safe - no PII exposed)
   app.get("/api/submissions/recent", (req, res) => {
     res.json({
       bufferedCount: fallbackSubmissionsBuffer.length,
-      recent: fallbackSubmissionsBuffer.slice(-10),
     });
   });
 
@@ -743,7 +747,6 @@ Guidelines for your response:
         reply:
           "🦁 *Roar!* Leo is right here! Whether you're curious about our admissions, meal menus, or potty training techniques, our teachers and I are ready to welcome your family! Feel free to click 'Book a Tour' to visit our cheerful classrooms!",
         isFallback: true,
-        error: error?.message || "Internal server error",
       });
     }
   });
