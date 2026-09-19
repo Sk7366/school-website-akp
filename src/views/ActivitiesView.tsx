@@ -426,7 +426,15 @@ export const ActivitiesView: React.FC<ActivitiesViewProps> = ({
 
                   <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[#173B5E]">
                     <span>Weekly 3x Sessions</span>
-                    <span style={{ color: act.accentColor }}>Explore More →</span>
+                    <button
+                      type="button"
+                      onClick={() => onNavigate('gallery')}
+                      className="cursor-pointer hover:underline flex items-center gap-1 font-bold text-xs"
+                      style={{ color: act.accentColor }}
+                      aria-label={`Explore more ${act.title} in gallery`}
+                    >
+                      Explore More →
+                    </button>
                   </div>
                 </div>
               );

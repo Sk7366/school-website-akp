@@ -269,7 +269,11 @@ export const CampusesView: React.FC<CampusesViewProps> = ({
                     <Phone className="w-4 h-4 text-[#F4511E] shrink-0 mt-0.5" />
                     <div>
                       <span className="font-bold text-[#173B5E]">Admissions Contact:</span>
-                      <p className="text-gray-600">{campus.phone}</p>
+                      <p className="text-gray-600">
+                        <a href="tel:+919945531032" className="hover:text-[#F4511E] hover:underline">+91 9945531032</a>
+                        {' / '}
+                        <a href="tel:+919845296096" className="hover:text-[#F4511E] hover:underline">+91 9845296096</a>
+                      </p>
                     </div>
                   </div>
 
@@ -277,7 +281,11 @@ export const CampusesView: React.FC<CampusesViewProps> = ({
                     <Mail className="w-4 h-4 text-[#5BC85A] shrink-0 mt-0.5" />
                     <div>
                       <span className="font-bold text-[#173B5E]">Email Desk:</span>
-                      <p className="text-gray-600">{campus.email}</p>
+                      <p className="text-gray-600">
+                        <a href="mailto:akidspreschool@gmail.com" className="hover:text-[#5BC85A] hover:underline">
+                          akidspreschool@gmail.com
+                        </a>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -365,6 +373,8 @@ export const CampusesView: React.FC<CampusesViewProps> = ({
                 <img
                   src="/lion-1.jpg"
                   alt="Sunny Montessori Classrooms"
+                  loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = '/lion%201.jpg';
@@ -385,6 +395,8 @@ export const CampusesView: React.FC<CampusesViewProps> = ({
                 <img
                   src="/lion-2.jpg"
                   alt="Leo Play & Activity Zone"
+                  loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = '/lion%202.jpg';
@@ -405,6 +417,8 @@ export const CampusesView: React.FC<CampusesViewProps> = ({
                 <img
                   src="/lion-3.jpg"
                   alt="Creative Arts & Story Den"
+                  loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = '/lion%203.jpg';
@@ -425,6 +439,8 @@ export const CampusesView: React.FC<CampusesViewProps> = ({
                 <img
                   src="/lion-4.jpg"
                   alt="Hygienic Dining & Rest Haven"
+                  loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = '/lion%204.jpg';

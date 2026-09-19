@@ -653,13 +653,15 @@ async function startServer() {
       const groq = getGroqClient();
 
       if (!groq) {
+        const isTourReq = /tour|visit|see campus|walkthrough|in-person|appointment/i.test(message);
         // Fallback intelligent response if GROQ_API_KEY is not yet configured
         return res.json({
-          reply:
-            `🦁 *Roar!* Hi there! I'm Leo, your friendly mascot at A Kid's Pre School! ` +
-            `For a child around ${childAge || "2–4 years"} in ${program || "our early childhood programs"}, ` +
-            `our Montessori + Play-Way curriculum focuses on sensory discovery, joyful phonics, and warm social bonding. ` +
-            `Our campus is at 156, Doctor layout, Hosa Rd, Naganathapura, Bengaluru. Admissions are open for 2026–27! Would you like to schedule a campus tour or check our location?`,
+          reply: isTourReq
+            ? `🦁 *Roar!* We would love to give you a personalized in-person tour of our school! Please use our **Personalized In-Person Experience Booking** page to select your preferred date and time slot and generate your VIP Visitor Pass with a free explorer kit!`
+            : `🦁 *Roar!* Hi there! I'm Leo, your friendly mascot at A Kid's Pre School! ` +
+              `For a child around ${childAge || "2–4 years"} in ${program || "our early childhood programs"}, ` +
+              `our Montessori + Play-Way curriculum focuses on sensory discovery, joyful phonics, and warm social bonding. ` +
+              `Our campus is at 156, Doctor layout, Hosa Rd, Naganathapura, Bengaluru. Admissions are open for 2026–27! Would you like to schedule a campus tour or check our location?`,
           isFallback: true,
         });
       }
@@ -671,6 +673,8 @@ Your tone is deeply caring, playful, reassuring to anxious parents, and encourag
 School Key Facts:
 - School Name: A Kid's Pre School
 - Campus Location: 156, Doctor layout, 1st main road, Hosa Rd, Naganathapura, Bengaluru, Karnataka 560100, India (near Hosa Road Junction / Electronic City corridor)
+- Admissions Hotline: +91 9945531032 / +91 9845296096
+- Email: akidspreschool@gmail.com
 - Core Philosophy: Joyful Montessori + Play-Way methodology, sensory integration, emotional intelligence.
 - Programs: 
   1. Playgroup (1.5 - 2.5 yrs): Sensory messy play, gentle separation, rhythm (9:00 AM - 11:30 AM)
@@ -691,6 +695,7 @@ Guidelines for your response:
 2. Give actionable, compassionate preschool guidance (answering their specific question about curriculum, admissions, potty training, separation anxiety, daily meals, or directions to our Bengaluru campus).
 3. Keep answers concise, highly readable, formatting with bullet points when listing tips.
 4. Conclude with a helpful call-to-action (e.g. inviting them to book a campus tour or explore our programs).
+5. When the user asks to book a tour, schedule a visit, book an in-person tour, see the campus, or anything similar, enthusiastically direct them to our "Personalized In-Person Experience Booking" page where they can pick a preferred date and time slot and receive an instant VIP Visitor Pass!
 `.trim();
 
       // Build chat messages array for Groq Chat Completion

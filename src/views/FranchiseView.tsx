@@ -628,7 +628,7 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
                 Thank You For Your Interest! 🦁
               </h3>
               <p className="text-sm text-gray-700 font-medium max-w-md mx-auto leading-relaxed">
-                Thank you for your interest in partnering with <strong>A Kid's Pre School</strong>. Our Head of Franchise Expansion will reach out to you within 24 business hours!
+                Thank you for your interest in partnering with <strong>A Kid's Pre School</strong>. Our Head of Franchise Expansion will reach out to you within 24 business hours! For urgent queries, call us at <a href="tel:+919945531032" className="text-[#F4511E] font-bold underline">+91 9945531032</a> / <a href="tel:+919845296096" className="text-[#F4511E] font-bold underline">+91 9845296096</a> or write to <a href="mailto:akidspreschool@gmail.com" className="text-[#F4511E] font-bold underline">akidspreschool@gmail.com</a>.
               </p>
             </div>
           ) : (
@@ -777,16 +777,13 @@ export const FranchiseView: React.FC<FranchiseViewProps> = ({
               <Building className="w-5 h-5" />
               Explore Franchise Opportunities
             </button>
-            <button
-              onClick={() => {
-                const elem = document.getElementById('franchise-form-section');
-                elem?.scrollIntoView({ behavior: 'smooth' });
-              }}
+            <a
+              href="tel:+919945531032"
               className="px-8 py-4 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-heading font-extrabold text-sm uppercase tracking-wider border border-white/30 transition-all flex items-center gap-2 cursor-pointer"
             >
               <Phone className="w-5 h-5 text-[#FFD21F]" />
-              Talk to Our Franchise Team
-            </button>
+              Talk to Our Franchise Team (+91 9945531032)
+            </a>
           </div>
         </div>
       </section>

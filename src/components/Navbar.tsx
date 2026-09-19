@@ -8,15 +8,8 @@ import {
   Sparkles,
   ShieldCheck,
   ChevronDown,
-  Compass,
-  Calculator,
-  Baby,
   Building,
   Gamepad2,
-  Users,
-  Smile,
-  Eye,
-  BookOpen,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -34,7 +27,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [interactiveDropdownOpen, setInteractiveDropdownOpen] = useState(false);
-  const [quickLinksOpen, setQuickLinksOpen] = useState(false);
 
   const mainNavItems: { label: string; tab: PageTab }[] = [
     { label: 'HOME', tab: 'home' },
@@ -46,15 +38,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     { label: 'BLOG', tab: 'blog' },
     { label: 'FRANCHISE', tab: 'franchise' },
     { label: 'CONTACT', tab: 'contact' },
-  ];
-
-  const quickLinks: { label: string; tab: PageTab; desc: string; icon: any }[] = [
-    { label: 'About Our School', tab: 'about', desc: 'Our story, mission & values', icon: Users },
-    { label: 'Teaching Methodology', tab: 'teaching', desc: 'How we nurture young minds', icon: BookOpen },
-    { label: 'Activities & Exploration', tab: 'activities', desc: 'Fun hands-on learning', icon: Compass },
-    { label: 'Life at Preschool Gallery', tab: 'gallery', desc: 'Photos & videos from campus', icon: Eye },
-    { label: 'Parenting Blog & News', tab: 'blog', desc: 'Tips from our educators', icon: Smile },
-    { label: 'Franchise Opportunities', tab: 'franchise', desc: 'Partner with AKP', icon: Building },
   ];
 
   const exploreFeatures: { label: string; tab: PageTab; desc: string; icon: any; badge?: string }[] = [
@@ -149,63 +132,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               );
             })}
 
-            {/* Quick Links Dropdown */}
-            <div className="relative shrink-0">
-              <button
-                onClick={() => {
-                  setQuickLinksOpen(!quickLinksOpen);
-                  setInteractiveDropdownOpen(false);
-                }}
-                className={`px-1.5 xl:px-2 2xl:px-2.5 py-1.5 xl:py-2 rounded-xl text-[11px] xl:text-xs 2xl:text-sm font-extrabold tracking-tight xl:tracking-wide flex items-center gap-0.5 xl:gap-1 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                  quickLinksOpen
-                    ? 'text-[#F4511E] bg-[#FFF3E0] ring-1 ring-orange-200'
-                    : 'text-[#173B5E] hover:text-[#F4511E] hover:bg-orange-50/60'
-                }`}
-              >
-                <span>QUICK LINKS</span>
-                <ChevronDown className="w-3 h-3 xl:w-3.5 xl:h-3.5 shrink-0" />
-              </button>
-
-              {quickLinksOpen && (
-                <div
-                  onMouseLeave={() => setQuickLinksOpen(false)}
-                  className="absolute top-full left-0 mt-2 w-80 bg-white rounded-3xl p-3 border-3 border-[#FFD21F] shadow-2xl z-50 animate-fade-in space-y-1"
-                >
-                  {quickLinks.map((link) => {
-                    const Icon = link.icon;
-                    const isLinkActive = activeTab === link.tab;
-                    return (
-                      <button
-                        key={link.tab}
-                        onClick={() => handleNavClick(link.tab)}
-                        className={`w-full p-2.5 rounded-2xl text-left flex items-start gap-3 transition-all cursor-pointer ${
-                          isLinkActive
-                            ? 'bg-[#FFF3E0] border border-orange-200'
-                            : 'hover:bg-orange-50'
-                        }`}
-                      >
-                        <div className="w-8 h-8 rounded-xl bg-orange-100 text-[#F4511E] flex items-center justify-center shrink-0 mt-0.5">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div className="flex-1">
-                          <span className="font-heading font-extrabold text-xs text-[#173B5E]">
-                            {link.label}
-                          </span>
-                          <p className="text-[10px] text-gray-500 line-clamp-1">{link.desc}</p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
             {/* Interactive World Dropdown Menu */}
             <div className="relative shrink-0">
               <button
                 onClick={() => {
                   setInteractiveDropdownOpen(!interactiveDropdownOpen);
-                  setQuickLinksOpen(false);
                 }}
                 className={`px-1.5 xl:px-2 2xl:px-2.5 py-1.5 xl:py-2 rounded-xl text-[11px] xl:text-xs 2xl:text-sm font-extrabold tracking-tight xl:tracking-wide flex items-center gap-0.5 xl:gap-1 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   ['kids-zone', 'campuses'].includes(activeTab)
@@ -343,28 +274,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   {f.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Links in Mobile */}
-          <div className="bg-white p-3 rounded-2xl border-2 border-[#FFD21F] space-y-2">
-            <div className="text-[11px] font-extrabold text-[#FFD21F] uppercase px-1">
-              🔗 Quick Links:
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {quickLinks.map((link) => (
-                <button
-                  key={link.tab}
-                  onClick={() => handleNavClick(link.tab)}
-                  className={`p-2 rounded-xl text-xs font-bold text-left border ${
-                    activeTab === link.tab
-                      ? 'bg-[#FFD21F] text-[#173B5E] border-[#FFD21F]'
-                      : 'bg-[#FFF9EC] text-[#173B5E] border-orange-100'
-                  }`}
-                >
-                  {link.label}
                 </button>
               ))}
             </div>

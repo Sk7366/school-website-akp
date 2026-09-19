@@ -143,6 +143,7 @@ export const BlogView: React.FC<BlogViewProps> = ({
               <img
                 src={activePost.coverImage}
                 alt={activePost.title}
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -305,6 +306,8 @@ export const BlogView: React.FC<BlogViewProps> = ({
                         <img
                           src={post.coverImage}
                           alt={post.title}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       </div>

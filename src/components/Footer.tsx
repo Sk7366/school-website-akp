@@ -144,11 +144,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmissionModal
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-[#5BC85A] shrink-0" />
-                <span>+91 9845296096 / +91 9945531032</span>
+                <span>
+                  <a href="tel:+919945531032" className="hover:text-white transition-colors">+91 9945531032</a>
+                  {' / '}
+                  <a href="tel:+919845296096" className="hover:text-white transition-colors">+91 9845296096</a>
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#29B6F6] shrink-0" />
-                <span>akidspreschool@gmail.com</span>
+                <a href="mailto:akidspreschool@gmail.com" className="hover:text-white transition-colors">akidspreschool@gmail.com</a>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-[#FF8A3D] shrink-0" />

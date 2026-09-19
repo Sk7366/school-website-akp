@@ -311,6 +311,8 @@ export const TeachingView: React.FC<TeachingViewProps> = ({
                 <img
                   src={teachingStations[activeStation].image}
                   alt={teachingStations[activeStation].name}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                 />
               </div>

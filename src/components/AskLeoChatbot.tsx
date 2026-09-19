@@ -29,7 +29,25 @@ interface ChatMessage {
   text: string;
   options?: { label: string; action?: () => void; textPrompt?: string }[];
   isAiGenerated?: boolean;
+  hasTourAction?: boolean;
 }
+
+const isTourQuery = (text: string): boolean => {
+  const t = text.toLowerCase();
+  return (
+    t.includes('tour') ||
+    t.includes('visit') ||
+    t.includes('see the campus') ||
+    t.includes('see campus') ||
+    t.includes('walkthrough') ||
+    t.includes('in-person') ||
+    t.includes('come over') ||
+    t.includes('look around') ||
+    t.includes('view school') ||
+    t.includes('schedule a visit') ||
+    t.includes('book a tour')
+  );
+};
 
 export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
   onOpenAdmission,
@@ -136,16 +154,26 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
         data.reply ||
         "🦁 *Roar!* I am so excited to welcome your child! Our teachers and I are ready to give you a guided walkthrough. Let's schedule a tour or calculate your fee estimate!";
 
+      const isTour = isTourQuery(queryText);
+      const isTourRelated = isTour || isTourQuery(leoReply);
+
       const leoMsg: ChatMessage = {
         id: `leo-${Date.now()}`,
         sender: 'leo',
         text: leoReply,
         isAiGenerated: true,
-        options: [
-          { label: '📅 Book In-Person Tour', textPrompt: 'Book a campus tour' },
-          { label: '📍 Find Our Campus', textPrompt: 'Where is your campus located?' },
-          { label: '💬 Ask Another Question', textPrompt: 'Tell me about the daily routine' },
-        ],
+        hasTourAction: isTourRelated,
+        options: isTourRelated
+          ? [
+              { label: '📅 Book In-Person Tour', textPrompt: 'Book a campus tour' },
+              { label: '📍 Campus Location & Timings', textPrompt: 'Where is your campus located?' },
+              { label: '🎒 Explore Programs', textPrompt: 'What programs do you offer?' },
+            ]
+          : [
+              { label: '📅 Book In-Person Tour', textPrompt: 'Book a campus tour' },
+              { label: '📍 Find Our Campus', textPrompt: 'Where is your campus located?' },
+              { label: '💬 Ask Another Question', textPrompt: 'Tell me about the daily routine' },
+            ],
       };
 
       setMessages((prev) => [...prev, leoMsg]);
@@ -155,14 +183,15 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
       // Gentle offline fallback
       let fallback =
         "🦁 *Roar!* Thank you for asking! At A Kid's Pre School, our child-first Montessori + Play-Way curriculum ensures every toddler feels confident, loved, and curious. Admissions for 2026–27 are now open with limited batch sizes!";
-      
+      let isFallbackTour = isTourQuery(queryText);
+
       const q = queryText.toLowerCase();
-      if (q.includes('fee') || q.includes('cost') || q.includes('tuition')) {
+      if (isFallbackTour) {
+        fallback =
+          "🦁 *Roar!* We would love to welcome your family for a campus visit! Please click the button below to open our **Personalized In-Person Experience Booking** page. You can choose a convenient date, select a morning or afternoon walkthrough slot, and generate your instant VIP Visitor Pass!";
+      } else if (q.includes('fee') || q.includes('cost') || q.includes('tuition')) {
         fallback =
           "🦁 *Tuition & Fees*: Our all-inclusive tuition covers classroom learning kits, daily nutritious snacks, and creative arts studios! Please book a campus visit or contact our admissions team for the complete prospectus!";
-      } else if (q.includes('tour') || q.includes('visit')) {
-        fallback =
-          "🦁 *Campus Tours*: We host morning walkthroughs Monday through Saturday at 10 AM and 3 PM! You'll get to meet our certified teachers and see our joyful classrooms.";
       } else if (q.includes('potty') || q.includes('toilet')) {
         fallback =
           "🦁 *Potty Training*: No stress at all! For Playgroup and early Nursery, our warm caregivers gently assist with scheduled potty breaks and positive reinforcement. We meet every child where they are!";
@@ -172,8 +201,9 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
         id: `leo-${Date.now()}`,
         sender: 'leo',
         text: fallback,
+        hasTourAction: isFallbackTour,
         options: [
-          { label: '📅 Book a Campus Tour', textPrompt: 'Book a tour' },
+          { label: '📅 Book In-Person Tour', textPrompt: 'Book a tour' },
           { label: '🎒 Explore Programs', textPrompt: 'What programs do you offer?' },
         ],
       };
@@ -185,17 +215,22 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
   };
 
   const handleOptionClick = (opt: { label: string; textPrompt?: string }) => {
-    if (opt.label.includes('Book In-Person Tour') || opt.label.includes('Book a Campus Tour') || opt.label.includes('Book a Tour')) {
+    const labelLower = opt.label.toLowerCase();
+    if (
+      labelLower.includes('tour') ||
+      labelLower.includes('visit') ||
+      labelLower.includes('in-person')
+    ) {
       if (onNavigate) onNavigate('book-tour');
       setIsOpen(false);
       return;
     }
-    if (opt.label.includes('Explore Programs') || opt.label.includes('View Programs')) {
+    if (labelLower.includes('program')) {
       if (onNavigate) onNavigate('programs');
       setIsOpen(false);
       return;
     }
-    if (opt.label.includes('Admissions')) {
+    if (labelLower.includes('admission')) {
       if (onOpenAdmission) onOpenAdmission();
       setIsOpen(false);
       return;
@@ -348,6 +383,22 @@ export const AskLeoChatbot: React.FC<AskLeoChatbotProps> = ({
                     </div>
                     <div className="p-3.5 rounded-2xl rounded-tl-none bg-white text-[#173B5E] text-xs sm:text-[13px] font-medium shadow-sm border border-orange-100 whitespace-pre-line leading-relaxed">
                       {msg.text}
+                      {msg.hasTourAction && (
+                        <div className="mt-3 pt-2.5 border-t border-orange-100">
+                          <button
+                            id="leo-chat-book-tour-btn"
+                            type="button"
+                            onClick={() => {
+                              if (onNavigate) onNavigate('book-tour');
+                              setIsOpen(false);
+                            }}
+                            className="w-full py-2.5 px-3.5 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer"
+                          >
+                            <Calendar className="w-4 h-4 text-[#FFD21F]" />
+                            <span>Book Personalized In-Person Tour 🦁</span>
+                          </button>
+                        </div>
+                      )}
                       {msg.isAiGenerated && (
                         <div className="mt-1.5 flex items-center gap-1 text-[10px] text-gray-400 font-semibold">
                           <Sparkles className="w-3 h-3 text-[#FFD21F]" /> Leo AI response

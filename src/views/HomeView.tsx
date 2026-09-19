@@ -406,6 +406,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       <img
                         src={persona.imgSrc}
                         alt={persona.title}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -1128,6 +1130,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 <img
                   src={item.file}
                   alt={item.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#173B5E]/90 via-[#173B5E]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-5 text-white">
@@ -1188,6 +1192,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     <img
                       src={post.coverImage}
                       alt={post.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
@@ -1301,6 +1307,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <img
               src={selectedGalleryImage.file}
               alt={selectedGalleryImage.title}
+              decoding="async"
               className="w-full max-h-[70vh] object-cover"
             />
             <div className="p-6 bg-[#FFF9EC]">

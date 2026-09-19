@@ -21,6 +21,7 @@ import {
   ArrowLeft,
   QrCode,
   Download,
+  Printer,
   Gift,
   ShieldCheck,
   Heart,
@@ -136,6 +137,110 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
       setStep(3);
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleSavePass = () => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 560;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Background
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, 800, 560);
+
+      // Gold Outer Border
+      ctx.strokeStyle = '#FFD21F';
+      ctx.lineWidth = 10;
+      ctx.strokeRect(10, 10, 780, 540);
+
+      // Header Banner Background
+      ctx.fillStyle = '#173B5E';
+      ctx.fillRect(16, 16, 768, 95);
+
+      // School Title
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 28px sans-serif';
+      ctx.fillText("A KID'S PRE SCHOOL", 40, 58);
+
+      ctx.fillStyle = '#FFD21F';
+      ctx.font = 'bold 16px sans-serif';
+      ctx.fillText('OFFICIAL VIP VISITOR PASS 🦁', 40, 88);
+
+      // Booking ID badge
+      ctx.fillStyle = '#FFF9EC';
+      ctx.fillRect(520, 36, 240, 48);
+      ctx.strokeStyle = '#FFD21F';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(520, 36, 240, 48);
+
+      ctx.fillStyle = '#F4511E';
+      ctx.font = 'bold 16px monospace';
+      ctx.fillText(`PASS: ${confirmedBookingId || 'AKP-VIP'}`, 535, 66);
+
+      // Divider
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(40, 135);
+      ctx.lineTo(760, 135);
+      ctx.stroke();
+
+      // Details Labels & Values
+      ctx.fillStyle = '#64748B';
+      ctx.font = '16px sans-serif';
+      ctx.fillText('Guest Parent:', 40, 175);
+      ctx.fillText('Little Explorer:', 40, 225);
+      ctx.fillText('Program:', 40, 275);
+      ctx.fillText('Date & Slot:', 40, 325);
+      ctx.fillText('Campus Location:', 40, 375);
+
+      ctx.fillStyle = '#173B5E';
+      ctx.font = 'bold 18px sans-serif';
+      ctx.fillText(parentName || 'Valued Parent', 220, 175);
+
+      ctx.fillStyle = '#F4511E';
+      ctx.font = 'bold 18px sans-serif';
+      ctx.fillText(childName || 'Little Explorer', 220, 225);
+
+      ctx.fillStyle = '#173B5E';
+      ctx.font = 'bold 18px sans-serif';
+      ctx.fillText(program || 'Early Years Exploration', 220, 275);
+
+      ctx.fillStyle = '#0288D1';
+      ctx.font = 'bold 18px sans-serif';
+      ctx.fillText(`${selectedDate} @ ${selectedTimeSlot.split('–')[0].trim()}`, 220, 325);
+
+      ctx.fillStyle = '#173B5E';
+      ctx.font = '15px sans-serif';
+      ctx.fillText('156, Doctor layout, 1st main road, Hosa Rd, Bengaluru 560100', 220, 375);
+
+      // Bottom Bar
+      ctx.fillStyle = '#FFF9EC';
+      ctx.fillRect(16, 430, 768, 105);
+
+      ctx.fillStyle = '#173B5E';
+      ctx.font = 'bold 15px sans-serif';
+      ctx.fillText('🎁 Includes Free Little Explorer Welcome Kit & Mascot Tour!', 40, 468);
+
+      ctx.fillStyle = '#5BC85A';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.fillText('Direct Admissions Desk: +91 9945531032 / +91 9845296096', 40, 502);
+
+      // Download
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `AKP-VIP-Visitor-Pass-${confirmedBookingId || 'Pass'}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Error saving VIP pass:', err);
+      window.print();
     }
   };
 
@@ -468,7 +573,10 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
                 </div>
 
                 {/* VIP Visitor Pass Ticket */}
-                <div className="max-w-md mx-auto bg-white rounded-3xl p-6 border-4 border-[#FFD21F] shadow-xl text-left relative overflow-hidden">
+                <div
+                  id="vip-pass-ticket"
+                  className="max-w-md mx-auto bg-white rounded-3xl p-6 border-4 border-[#FFD21F] shadow-xl text-left relative overflow-hidden"
+                >
                   <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-3">
                     <div className="flex items-center gap-2">
                       <AKPLogo size={36} showText={false} />
@@ -510,16 +618,32 @@ export const BookTourView: React.FC<BookTourViewProps> = ({
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                   <button
+                    id="print-save-visitor-pass-btn"
+                    type="button"
                     onClick={() => window.print()}
-                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#173B5E] text-white font-heading font-bold text-xs uppercase flex items-center justify-center gap-2 hover:bg-[#102A43]"
+                    disabled={step !== 3 || !confirmedBookingId}
+                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#173B5E] hover:bg-[#102A43] text-white font-heading font-bold text-xs uppercase flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Print VIP Pass"
                   >
-                    <Download className="w-4 h-4 text-[#FFD21F]" />
+                    <Printer className="w-4 h-4 text-[#FFD21F]" />
                     Print / Save Visitor Pass
                   </button>
 
                   <button
+                    id="save-vip-pass-btn"
+                    type="button"
+                    onClick={handleSavePass}
+                    disabled={step !== 3 || !confirmedBookingId}
+                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-bold text-xs uppercase flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Download Pass Image"
+                  >
+                    <Download className="w-4 h-4 text-[#FFD21F]" />
+                    Save Pass (Download PNG)
+                  </button>
+
+                  <button
                     onClick={() => onNavigate('home')}
-                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white border border-gray-200 text-[#173B5E] font-heading font-bold text-xs hover:bg-orange-50"
+                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white border border-gray-200 text-[#173B5E] font-heading font-bold text-xs hover:bg-orange-50 cursor-pointer"
                   >
                     Return to Homepage
                   </button>

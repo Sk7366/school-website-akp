@@ -263,3 +263,27 @@
   }
 }
 
+/* Print Styles for VIP Pass */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #vip-pass-ticket,
+  #vip-pass-ticket * {
+    visibility: visible;
+  }
+  #vip-pass-ticket {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    margin: 20px auto;
+    max-width: 600px;
+    box-shadow: none !important;
+    border: 3px solid #FFD21F !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+

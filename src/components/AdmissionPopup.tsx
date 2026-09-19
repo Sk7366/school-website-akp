@@ -172,7 +172,7 @@ export const AdmissionPopup: React.FC<AdmissionPopupProps> = ({ isOpen, onClose,
                   interactive={false}
                 />
                 <p className="text-xs text-gray-600 max-w-xs leading-relaxed mt-3 font-medium">
-                  Thank you for choosing <strong className="text-[#F4511E]">A Kid's Pre School</strong>. Our admissions team will connect with you within 2 business hours!
+                  Thank you for choosing <strong className="text-[#F4511E]">A Kid's Pre School</strong>. Our admissions team will connect with you within 2 business hours! For immediate assistance, call us at <a href="tel:+919945531032" className="text-[#F4511E] font-bold underline">+91 9945531032</a> / <a href="tel:+919845296096" className="text-[#F4511E] font-bold underline">+91 9845296096</a>.
                 </p>
               </div>
             ) : (

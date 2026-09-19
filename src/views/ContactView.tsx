@@ -207,7 +207,9 @@ export const ContactView: React.FC<ContactViewProps> = ({
                 <div>
                   <h4 className="font-heading font-bold text-base text-[#173B5E]">Admissions Hotline</h4>
                   <p className="text-sm font-extrabold text-[#F4511E] mt-0.5">
-                    +91 9845296096 / +91 9945531032
+                    <a href="tel:+919945531032" className="hover:underline">+91 9945531032</a>
+                    {' / '}
+                    <a href="tel:+919845296096" className="hover:underline">+91 9845296096</a>
                   </p>
                   <p className="text-xs text-gray-500 font-medium mt-1">Mon – Sat: 8:30 AM – 6:30 PM</p>
                 </div>

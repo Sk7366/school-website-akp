@@ -430,6 +430,8 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, onOpenAdmissio
                 <img
                   src={currentFeature.image}
                   alt={currentFeature.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                 />
               </div>

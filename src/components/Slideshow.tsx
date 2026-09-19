@@ -61,10 +61,16 @@ export const Slideshow: React.FC = () => {
       <img
         src={SLIDES[current].src}
         alt={SLIDES[current].alt}
+        loading={current === 0 ? 'eager' : 'lazy'}
+        fetchPriority={current === 0 ? 'high' : 'auto'}
+        decoding="async"
         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
           fade ? 'opacity-100' : 'opacity-0'
         }`}
       />
+
+      {/* Hidden prefetch for next slide */}
+      <link rel="prefetch" href={SLIDES[(current + 1) % SLIDES.length].src} as="image" />
 
       {/* Left arrow */}
       <button
