@@ -101,8 +101,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Main Navbar */}
-      <div className="w-full max-w-[1720px] mx-auto px-3 sm:px-5 lg:px-3 xl:px-6 2xl:px-8">
-        <div className="flex items-center justify-between h-20 gap-1.5 xl:gap-2.5 2xl:gap-4">
+      <div className="w-full max-w-[1720px] mx-auto px-3 sm:px-4 xl:px-3 2xl:px-8">
+        <div className="flex items-center justify-between h-20 gap-1.5 xl:gap-2 2xl:gap-4">
           {/* Brand Logo */}
           <div
             onClick={() => handleNavClick('home')}
@@ -113,7 +113,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 shrink-0">
+          <nav className="hidden xl:flex items-center gap-0.5 xl:gap-0.5 2xl:gap-1.5 shrink-0">
             {mainNavItems.slice(0, 5).map((item) => {
               const isActive = activeTab === item.tab;
               return (
@@ -121,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   key={item.tab}
                   id={`nav-link-${item.tab}`}
                   onClick={() => handleNavClick(item.tab)}
-                  className={`px-1.5 xl:px-2 2xl:px-2.5 py-1.5 xl:py-2 rounded-xl text-[11px] xl:text-xs 2xl:text-sm font-extrabold tracking-tight xl:tracking-wide transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`px-1.5 xl:px-1.5 2xl:px-2.5 py-1.5 xl:py-1.5 2xl:py-2 rounded-xl text-[11px] xl:text-[11.5px] 2xl:text-sm font-extrabold tracking-tight 2xl:tracking-wide transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'text-[#F4511E] bg-[#FFF3E0] shadow-xs'
                       : 'text-[#173B5E] hover:text-[#F4511E] hover:bg-orange-50/60'
@@ -138,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => {
                   setInteractiveDropdownOpen(!interactiveDropdownOpen);
                 }}
-                className={`px-1.5 xl:px-2 2xl:px-2.5 py-1.5 xl:py-2 rounded-xl text-[11px] xl:text-xs 2xl:text-sm font-extrabold tracking-tight xl:tracking-wide flex items-center gap-0.5 xl:gap-1 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                className={`px-1.5 xl:px-1.5 2xl:px-2.5 py-1.5 xl:py-1.5 2xl:py-2 rounded-xl text-[11px] xl:text-[11.5px] 2xl:text-sm font-extrabold tracking-tight 2xl:tracking-wide flex items-center gap-0.5 xl:gap-1 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   ['kids-zone', 'campuses'].includes(activeTab)
                     ? 'text-[#F4511E] bg-[#FFF3E0] ring-1 ring-orange-200'
                     : 'text-[#173B5E] hover:text-[#F4511E] hover:bg-orange-50/60'
@@ -197,7 +197,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   key={item.tab}
                   id={`nav-link-${item.tab}`}
                   onClick={() => handleNavClick(item.tab)}
-                  className={`px-1.5 xl:px-2 2xl:px-2.5 py-1.5 xl:py-2 rounded-xl text-[11px] xl:text-xs 2xl:text-sm font-extrabold tracking-tight xl:tracking-wide transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`px-1.5 xl:px-1.5 2xl:px-2.5 py-1.5 xl:py-1.5 2xl:py-2 rounded-xl text-[11px] xl:text-[11.5px] 2xl:text-sm font-extrabold tracking-tight 2xl:tracking-wide transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'text-[#F4511E] bg-[#FFF3E0] shadow-xs'
                       : 'text-[#173B5E] hover:text-[#F4511E] hover:bg-orange-50/60'
@@ -210,11 +210,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Action CTAs */}
-          <div className="hidden sm:flex items-center gap-1.5 xl:gap-2 2xl:gap-2.5 shrink-0">
+          <div className="hidden sm:flex items-center gap-1.5 xl:gap-1.5 2xl:gap-2.5 shrink-0">
             <button
               id="navbar-enquire-btn"
               onClick={onOpenAdmissionModal}
-              className="px-2.5 xl:px-3.5 2xl:px-4 py-1.5 xl:py-2 2xl:py-2.5 rounded-xl bg-[#FFD21F] hover:bg-[#FFC400] text-[#173B5E] font-heading font-extrabold text-xs xl:text-xs 2xl:text-sm tracking-wide shadow-md shadow-yellow-500/20 hover:-translate-y-0.5 transition-all flex items-center gap-1 xl:gap-1.5 cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
+              className="px-2.5 xl:px-2.5 2xl:px-4 py-1.5 xl:py-1.5 2xl:py-2.5 rounded-xl bg-[#FFD21F] hover:bg-[#FFC400] text-[#173B5E] font-heading font-extrabold text-xs xl:text-xs 2xl:text-sm tracking-wide shadow-md shadow-yellow-500/20 hover:-translate-y-0.5 transition-all flex items-center gap-1 xl:gap-1.5 cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
             >
               <Sparkles className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-[#F4511E] shrink-0" />
               ENQUIRE NOW
@@ -223,7 +223,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="navbar-book-tour-btn"
               onClick={() => handleNavClick('book-tour')}
-              className="px-3 xl:px-4 2xl:px-5 py-1.5 xl:py-2 2xl:py-2.5 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-xs xl:text-xs 2xl:text-sm tracking-wide shadow-lg shadow-[#F4511E]/30 hover:-translate-y-0.5 transition-all flex items-center gap-1 xl:gap-1.5 cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
+              className="px-3 xl:px-3 2xl:px-5 py-1.5 xl:py-1.5 2xl:py-2.5 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-xs xl:text-xs 2xl:text-sm tracking-wide shadow-lg shadow-[#F4511E]/30 hover:-translate-y-0.5 transition-all flex items-center gap-1 xl:gap-1.5 cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
             >
               <Calendar className="w-3.5 h-3.5 xl:w-4 xl:h-4 shrink-0" />
               BOOK A TOUR
@@ -231,11 +231,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex lg:hidden items-center gap-2">
+          <div className="flex xl:hidden items-center gap-2">
             <button
               id="mobile-enquire-btn-top"
               onClick={() => handleNavClick('campuses')}
-              className="px-3 py-1.5 rounded-lg bg-[#FFD21F] text-[#173B5E] font-heading font-extrabold text-xs shadow-xs hover:bg-[#FFC400] transition-colors cursor-pointer"
+              className="sm:hidden px-3 py-1.5 rounded-lg bg-[#FFD21F] text-[#173B5E] font-heading font-extrabold text-xs shadow-xs hover:bg-[#FFC400] transition-colors cursor-pointer"
             >
               LOCATE US
             </button>
@@ -256,7 +256,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       {mobileMenuOpen && (
         <div
           id="mobile-nav-drawer"
-          className="lg:hidden bg-[#FFF9EC] border-b-4 border-[#FFD21F] px-4 pt-3 pb-6 space-y-4 shadow-2xl animate-fade-in max-h-[85vh] overflow-y-auto"
+          className="xl:hidden bg-[#FFF9EC] border-b-4 border-[#FFD21F] px-4 pt-3 pb-6 space-y-4 shadow-2xl animate-fade-in max-h-[85vh] overflow-y-auto"
         >              {/* Featured Quick Interactive Links */}
           <div className="bg-white p-3 rounded-2xl border-2 border-orange-200 space-y-2">
             <div className="text-[11px] font-extrabold text-[#F4511E] uppercase px-1">
