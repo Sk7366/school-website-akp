@@ -83,50 +83,54 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b-2 border-[#FFD21F]/50 shadow-sm transition-all duration-300">
       {/* Top micro-announcement bar with quick admissions notice */}
-      <div className="bg-[#173B5E] text-white text-[11px] sm:text-xs py-1.5 px-3 sm:px-4">
+      <div className="bg-[#173B5E] text-white text-xs sm:text-[13px] md:text-sm py-2 px-3 sm:px-4">
         <div className="flex flex-wrap items-center justify-between gap-2 max-w-7xl mx-auto w-full">
           <div className="flex items-center gap-1.5 sm:gap-2 font-semibold min-w-0">
             <span className="text-[#FFD21F] font-bold shrink-0">Admissions Open 2026–27:</span>
             <span className="text-white/90 truncate sm:overflow-visible sm:whitespace-normal">Playgroup, Nursery, KG, Day Care</span>
           </div>
 
-          <div className="flex items-center gap-2.5 sm:gap-4 text-xs shrink-0 ml-auto">
+          <div className="flex items-center gap-3 sm:gap-5 text-xs sm:text-sm shrink-0 ml-auto">
             {/* Quick Link Pills in top bar */}
             <button
               onClick={() => handleNavClick('kids-zone')}
-              className="flex items-center gap-1 text-[#FFD21F] hover:underline font-bold"
+              className="flex items-center gap-1.5 text-[#FFD21F] hover:underline font-extrabold text-xs sm:text-sm cursor-pointer"
             >
-              <span>🦁 Kids Zone</span>
+              <span className="text-sm sm:text-base">🦁</span>
+              <span>Kids Zone</span>
             </button>
             <button
               onClick={() => handleNavClick('campuses')}
-              className="hidden sm:flex items-center gap-1 text-white/90 hover:text-white font-medium"
+              className="hidden sm:flex items-center gap-1.5 text-white/95 hover:text-white font-semibold text-xs sm:text-sm cursor-pointer"
             >
-              <span>📍 Find Campus</span>
+              <span className="text-sm sm:text-base">📍</span>
+              <span>Find Campus</span>
             </button>
             <button
               onClick={() => handleNavClick('book-tour')}
-              className="hidden md:flex items-center gap-1 text-white/90 hover:text-white font-medium"
+              className="hidden md:flex items-center gap-1.5 text-white/95 hover:text-white font-semibold text-xs sm:text-sm cursor-pointer"
             >
-              <span>📅 Book Visit</span>
+              <span className="text-sm sm:text-base">📅</span>
+              <span>Book Visit</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      <div className="w-full max-w-[1720px] mx-auto px-3 sm:px-5 lg:px-3 xl:px-6 2xl:px-8">
+        <div className="flex items-center justify-between h-20 gap-1.5 xl:gap-2.5 2xl:gap-4">
           {/* Brand Logo */}
           <div
             onClick={() => handleNavClick('home')}
-            className="cursor-pointer transition-transform hover:scale-102"
+            className="cursor-pointer transition-transform hover:scale-102 shrink-0 flex items-center"
           >
-            <AKPLogo size={50} />
+            <AKPLogo size={46} className="2xl:hidden" />
+            <AKPLogo size={52} className="hidden 2xl:flex" />
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 shrink-0">
             {mainNavItems.slice(0, 5).map((item) => {
               const isActive = activeTab === item.tab;
               return (
@@ -134,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   key={item.tab}
                   id={`nav-link-${item.tab}`}
                   onClick={() => handleNavClick(item.tab)}
-                  className={`px-2.5 xl:px-3 py-2 rounded-xl text-xs xl:text-sm font-extrabold tracking-wide transition-all cursor-pointer ${
+                  className={`px-1.5 xl:px-2 2xl:px-2.5 py-1.5 xl:py-2 rounded-xl text-[11px] xl:text-xs 2xl:text-sm font-extrabold tracking-tight xl:tracking-wide transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'text-[#F4511E] bg-[#FFF3E0] shadow-xs'
                       : 'text-[#173B5E] hover:text-[#F4511E] hover:bg-orange-50/60'
@@ -146,20 +150,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             })}
 
             {/* Quick Links Dropdown */}
-            <div className="relative">
+            <div className="relative shrink-0">
               <button
                 onClick={() => {
                   setQuickLinksOpen(!quickLinksOpen);
                   setInteractiveDropdownOpen(false);
                 }}
-                className={`px-3 py-2 rounded-xl text-xs xl:text-sm font-extrabold tracking-wide flex items-center gap-1 transition-all cursor-pointer ${
+                className={`px-1.5 xl:px-2 2xl:px-2.5 py-1.5 xl:py-2 rounded-xl text-[11px] xl:text-xs 2xl:text-sm font-extrabold tracking-tight xl:tracking-wide flex items-center gap-0.5 xl:gap-1 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   quickLinksOpen
                     ? 'text-[#F4511E] bg-[#FFF3E0] ring-1 ring-orange-200'
                     : 'text-[#173B5E] hover:text-[#F4511E] hover:bg-orange-50/60'
                 }`}
               >
                 <span>QUICK LINKS</span>
-                <ChevronDown className="w-3.5 h-3.5" />
+                <ChevronDown className="w-3 h-3 xl:w-3.5 xl:h-3.5 shrink-0" />
               </button>
 
               {quickLinksOpen && (
@@ -197,21 +201,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Interactive World Dropdown Menu */}
-            <div className="relative">
+            <div className="relative shrink-0">
               <button
                 onClick={() => {
                   setInteractiveDropdownOpen(!interactiveDropdownOpen);
                   setQuickLinksOpen(false);
                 }}
-                className={`px-3 py-2 rounded-xl text-xs xl:text-sm font-extrabold tracking-wide flex items-center gap-1 transition-all cursor-pointer ${
+                className={`px-1.5 xl:px-2 2xl:px-2.5 py-1.5 xl:py-2 rounded-xl text-[11px] xl:text-xs 2xl:text-sm font-extrabold tracking-tight xl:tracking-wide flex items-center gap-0.5 xl:gap-1 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   ['kids-zone', 'campuses'].includes(activeTab)
                     ? 'text-[#F4511E] bg-[#FFF3E0] ring-1 ring-orange-200'
                     : 'text-[#173B5E] hover:text-[#F4511E] hover:bg-orange-50/60'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#FFD21F]" />
+                <Sparkles className="w-3 h-3 xl:w-3.5 xl:h-3.5 text-[#FFD21F] shrink-0" />
                 <span>EXPLORE LEO'S WORLD</span>
-                <ChevronDown className="w-3.5 h-3.5" />
+                <ChevronDown className="w-3 h-3 xl:w-3.5 xl:h-3.5 shrink-0" />
               </button>
 
               {interactiveDropdownOpen && (
@@ -262,7 +266,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   key={item.tab}
                   id={`nav-link-${item.tab}`}
                   onClick={() => handleNavClick(item.tab)}
-                  className={`px-2.5 xl:px-3 py-2 rounded-xl text-xs xl:text-sm font-extrabold tracking-wide transition-all cursor-pointer ${
+                  className={`px-1.5 xl:px-2 2xl:px-2.5 py-1.5 xl:py-2 rounded-xl text-[11px] xl:text-xs 2xl:text-sm font-extrabold tracking-tight xl:tracking-wide transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'text-[#F4511E] bg-[#FFF3E0] shadow-xs'
                       : 'text-[#173B5E] hover:text-[#F4511E] hover:bg-orange-50/60'
@@ -275,22 +279,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Action CTAs */}
-          <div className="hidden sm:flex items-center gap-2.5">
+          <div className="hidden sm:flex items-center gap-1.5 xl:gap-2 2xl:gap-2.5 shrink-0">
             <button
               id="navbar-enquire-btn"
               onClick={onOpenAdmissionModal}
-              className="px-4 py-2.5 rounded-xl bg-[#FFD21F] hover:bg-[#FFC400] text-[#173B5E] font-heading font-extrabold text-xs xl:text-sm tracking-wide shadow-md shadow-yellow-500/20 hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+              className="px-2.5 xl:px-3.5 2xl:px-4 py-1.5 xl:py-2 2xl:py-2.5 rounded-xl bg-[#FFD21F] hover:bg-[#FFC400] text-[#173B5E] font-heading font-extrabold text-xs xl:text-xs 2xl:text-sm tracking-wide shadow-md shadow-yellow-500/20 hover:-translate-y-0.5 transition-all flex items-center gap-1 xl:gap-1.5 cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
             >
-              <Sparkles className="w-4 h-4 text-[#F4511E]" />
+              <Sparkles className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-[#F4511E] shrink-0" />
               ENQUIRE NOW
             </button>
 
             <button
               id="navbar-book-tour-btn"
               onClick={() => handleNavClick('book-tour')}
-              className="px-5 py-2.5 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-xs xl:text-sm tracking-wide shadow-lg shadow-[#F4511E]/30 hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+              className="px-3 xl:px-4 2xl:px-5 py-1.5 xl:py-2 2xl:py-2.5 rounded-xl bg-[#F4511E] hover:bg-[#E64A19] text-white font-heading font-extrabold text-xs xl:text-xs 2xl:text-sm tracking-wide shadow-lg shadow-[#F4511E]/30 hover:-translate-y-0.5 transition-all flex items-center gap-1 xl:gap-1.5 cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
             >
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-3.5 h-3.5 xl:w-4 xl:h-4 shrink-0" />
               BOOK A TOUR
             </button>
           </div>
@@ -299,16 +303,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex lg:hidden items-center gap-2">
             <button
               id="mobile-enquire-btn-top"
-              onClick={onOpenAdmissionModal}
-              className="px-3 py-1.5 rounded-lg bg-[#FFD21F] text-[#173B5E] font-heading font-extrabold text-xs shadow-xs"
+              onClick={() => handleNavClick('campuses')}
+              className="px-3 py-1.5 rounded-lg bg-[#FFD21F] text-[#173B5E] font-heading font-extrabold text-xs shadow-xs hover:bg-[#FFC400] transition-colors cursor-pointer"
             >
-              ENQUIRE
+              LOCATE US
             </button>
 
             <button
               id="mobile-menu-toggle-btn"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-[#173B5E] hover:bg-orange-50 transition-colors"
+              className="p-2 rounded-xl text-[#173B5E] hover:bg-orange-50 transition-colors cursor-pointer"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

@@ -243,7 +243,7 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
     clearHideTimer();
     hideTimerRef.current = setTimeout(() => {
       setIsBubbleVisible(false);
-    }, 200);
+    }, 300);
   };
 
   // For mobile: tap to toggle
@@ -281,6 +281,8 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
   return (
     <div
       ref={containerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className={`relative inline-flex items-end justify-center select-none ${className}`}
     >
       {/* ----------------------------------------------------------------- */}
@@ -290,30 +292,41 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
         <div
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className={`absolute z-50 animate-leo-bubble w-[290px] sm:w-[320px] max-w-[calc(100vw-32px)] bg-[#FFF8EE] border-3 border-[#F4511E] rounded-2xl p-4 shadow-2xl text-left pointer-events-auto ${
+          className={`absolute z-50 pointer-events-auto ${
             bubblePlacement === 'left'
-              ? 'right-full mr-4 bottom-8'
+              ? 'right-full mr-4 bottom-6'
               : bubblePlacement === 'right'
-              ? 'left-full ml-4 bottom-8'
+              ? 'left-full ml-4 bottom-6'
               : bubblePlacement === 'bottom'
               ? 'top-full mt-4 left-1/2 -translate-x-1/2'
-              : 'bottom-[96%] left-1/2 -translate-x-1/2 mb-3'
+              : bubblePlacement === 'top'
+              ? 'bottom-full mb-3 left-1/2 -translate-x-1/2'
+              : 'bottom-full mb-3 left-1/2 -translate-x-1/2 lg:bottom-4 lg:right-full lg:mr-4 lg:left-auto lg:translate-x-0'
           }`}
-          role="dialog"
-          aria-label="Leo Mascot Speech Bubble"
         >
-          {/* Speech Bubble Tail */}
           <div
-            className={`absolute w-4 h-4 bg-[#FFF8EE] border-[#F4511E] transform rotate-45 ${
-              bubblePlacement === 'left'
-                ? '-right-2.5 bottom-10 border-t-3 border-r-3'
-                : bubblePlacement === 'right'
-                ? '-left-2.5 bottom-10 border-b-3 border-l-3'
-                : bubblePlacement === 'bottom'
-                ? '-top-2.5 left-1/2 -translate-x-1/2 border-t-3 border-l-3'
-                : '-bottom-2.5 left-1/2 -translate-x-1/2 border-b-3 border-r-3'
+            className={`animate-leo-bubble w-[290px] sm:w-[320px] max-w-[calc(100vw-32px)] bg-[#FFF8EE] border-3 border-[#F4511E] rounded-2xl p-4 shadow-2xl text-left relative ${
+              bubblePlacement === 'auto'
+                ? 'after:content-[\'\'] after:absolute after:hidden lg:after:block after:-right-4 after:top-0 after:bottom-0 after:w-4'
+                : ''
             }`}
-          />
+            role="dialog"
+            aria-label="Leo Mascot Speech Bubble"
+          >
+            {/* Speech Bubble Tail */}
+            <div
+              className={`absolute w-4 h-4 bg-[#FFF8EE] border-[#F4511E] transform rotate-45 ${
+                bubblePlacement === 'left'
+                  ? '-right-2.5 bottom-10 border-t-3 border-r-3'
+                  : bubblePlacement === 'right'
+                  ? '-left-2.5 bottom-10 border-b-3 border-l-3'
+                  : bubblePlacement === 'bottom'
+                  ? '-top-2.5 left-1/2 -translate-x-1/2 border-t-3 border-l-3'
+                  : bubblePlacement === 'top'
+                  ? '-bottom-2.5 left-1/2 -translate-x-1/2 border-b-3 border-r-3'
+                  : '-bottom-2.5 left-1/2 -translate-x-1/2 border-b-3 border-r-3 lg:-right-2.5 lg:bottom-10 lg:left-auto lg:translate-x-0 lg:border-t-3 lg:border-r-3 lg:border-b-0 lg:border-l-0'
+              }`}
+            />
 
           {/* Bubble Header */}
           <div className="flex items-center justify-between border-b border-orange-200/90 pb-2 mb-2.5">
@@ -397,6 +410,7 @@ export const LeoCharacter: React.FC<LeoCharacterProps> = ({
             </div>
           )}
         </div>
+      </div>
       )}
 
       {/* ----------------------------------------------------------------- */}
