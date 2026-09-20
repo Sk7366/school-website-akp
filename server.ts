@@ -61,109 +61,110 @@ const getWorkingModel = async (groq: Groq): Promise<string> => {
   return cachedGroqModel;
 };
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+const app = express();
+const PORT = Number(process.env.PORT) || 3000;
 
-  app.use(express.json());
-  // Serve static assets from public
-  app.use(express.static(path.join(process.cwd(), "public")));
+app.use(express.json());
+// Serve static assets from public
+app.use(express.static(path.join(process.cwd(), "public")));
 
-  // Health Check
-  app.get("/api/health", (req, res) => {
-    res.json({
-      status: "ok",
-      hasGroqKey: Boolean(process.env.GROQ_API_KEY),
-      hasSupabase: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
-      hasTelegram: Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID),
-      timestamp: new Date().toISOString(),
-    });
+const apiRouter = express.Router();
+
+// Health Check
+apiRouter.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    hasGroqKey: Boolean(process.env.GROQ_API_KEY),
+    hasSupabase: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+    hasTelegram: Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID),
+    timestamp: new Date().toISOString(),
   });
+});
 
-  // ============================================
-  // TEST ENDPOINT: Supabase RLS & Connection (Development only)
-  // ============================================
-  app.get("/api/test-supabase", async (req, res) => {
-    if (process.env.NODE_ENV === "production") {
-      return res.status(404).json({ error: "Not found" });
+// ============================================
+// TEST ENDPOINT: Supabase RLS & Connection (Development only)
+// ============================================
+apiRouter.get("/test-supabase", async (req, res) => {
+  if (process.env.NODE_ENV === "production") {
+    return res.status(404).json({ error: "Not found" });
+  }
+  if (!supabase) {
+    return res.status(503).json({ error: "Database client not initialized" });
+  }
+  try {
+    // Test 1: Insert into admissions (should work with service_role)
+    const { data: admissionData, error: admissionError } = await supabase
+      .from("admissions")
+      .insert([{
+        parent_name: "Test Parent",
+        child_name: "Test Child",
+        child_age: 4,
+        phone: "9999999999",
+        program: "Nursery",
+        message: "RLS Test - This is a test entry",
+        status: "new"
+      }])
+      .select();
+    
+    if (admissionError) {
+      return res.status(500).json({ 
+        admissions: "FAILED", 
+        error: "Insert verification failed"
+      });
     }
-    if (!supabase) {
-      return res.status(503).json({ error: "Database client not initialized" });
+    
+    // Test 2: Read gallery events (should work - service_role bypasses RLS)
+    const { data: galleryData, error: galleryError } = await supabase
+      .from("gallery_events")
+      .select("*")
+      .eq("published", true)
+      .limit(5);
+    
+    if (galleryError) {
+      return res.status(500).json({ 
+        gallery: "FAILED", 
+        error: "Gallery verification failed" 
+      });
     }
-    try {
-      // Test 1: Insert into admissions (should work with service_role)
-      const { data: admissionData, error: admissionError } = await supabase
+    
+    // Test 3: Read articles (should work)
+    const { data: articlesData, error: articlesError } = await supabase
+      .from("articles")
+      .select("*")
+      .eq("published", true)
+      .limit(3);
+    
+    if (articlesError) {
+      return res.status(500).json({ 
+        articles: "FAILED", 
+        error: "Articles verification failed" 
+      });
+    }
+    
+    // Clean up: Delete the test admission entry
+    if (admissionData && admissionData.length > 0) {
+      await supabase
         .from("admissions")
-        .insert([{
-          parent_name: "Test Parent",
-          child_name: "Test Child",
-          child_age: 4,
-          phone: "9999999999",
-          program: "Nursery",
-          message: "RLS Test - This is a test entry",
-          status: "new"
-        }])
-        .select();
-      
-      if (admissionError) {
-        return res.status(500).json({ 
-          admissions: "FAILED", 
-          error: "Insert verification failed"
-        });
-      }
-      
-      // Test 2: Read gallery events (should work - service_role bypasses RLS)
-      const { data: galleryData, error: galleryError } = await supabase
-        .from("gallery_events")
-        .select("*")
-        .eq("published", true)
-        .limit(5);
-      
-      if (galleryError) {
-        return res.status(500).json({ 
-          gallery: "FAILED", 
-          error: "Gallery verification failed" 
-        });
-      }
-      
-      // Test 3: Read articles (should work)
-      const { data: articlesData, error: articlesError } = await supabase
-        .from("articles")
-        .select("*")
-        .eq("published", true)
-        .limit(3);
-      
-      if (articlesError) {
-        return res.status(500).json({ 
-          articles: "FAILED", 
-          error: "Articles verification failed" 
-        });
-      }
-      
-      // Clean up: Delete the test admission entry
-      if (admissionData && admissionData.length > 0) {
-        await supabase
-          .from("admissions")
-          .delete()
-          .eq("id", admissionData[0].id);
-      }
-      
-      res.json({
-        admissions: "SUCCESS",
-        gallery: "SUCCESS",
-        galleryCount: galleryData?.length || 0,
-        articles: "SUCCESS",
-        articlesCount: articlesData?.length || 0,
-        message: "Supabase connection and verification completed successfully",
-        timestamp: new Date().toISOString()
-      });
-    } catch (error: any) {
-      console.error("[Supabase Test Error]", error);
-      res.status(500).json({ 
-        error: "Verification failed"
-      });
+        .delete()
+        .eq("id", admissionData[0].id);
     }
-  });
+    
+    res.json({
+      admissions: "SUCCESS",
+      gallery: "SUCCESS",
+      galleryCount: galleryData?.length || 0,
+      articles: "SUCCESS",
+      articlesCount: articlesData?.length || 0,
+      message: "Supabase connection and verification completed successfully",
+      timestamp: new Date().toISOString()
+    });
+  } catch (error: any) {
+    console.error("[Supabase Test Error]", error);
+    res.status(500).json({ 
+      error: "Verification failed"
+    });
+  }
+});
 
   // ============================================
   // Telegram Bot Notification & Duplicate Prevention
@@ -630,14 +631,14 @@ async function startServer() {
     }
   };
 
-  app.post("/api/submit-form", handleFormSubmission);
-  app.post("/api/admissions", handleFormSubmission);
-  app.post("/api/enquiries", handleFormSubmission);
-  app.post("/api/tour-bookings", handleFormSubmission);
-  app.post("/api/franchise", handleFormSubmission);
+  apiRouter.post("/submit-form", handleFormSubmission);
+  apiRouter.post("/admissions", handleFormSubmission);
+  apiRouter.post("/enquiries", handleFormSubmission);
+  apiRouter.post("/tour-bookings", handleFormSubmission);
+  apiRouter.post("/franchise", handleFormSubmission);
 
   // Diagnostic route for monitoring buffer health (safe - no PII exposed)
-  app.get("/api/submissions/recent", (req, res) => {
+  apiRouter.get("/submissions/recent", (req, res) => {
     res.json({
       bufferedCount: fallbackSubmissionsBuffer.length,
     });
@@ -646,7 +647,7 @@ async function startServer() {
   // ============================================
   // Groq API route for "Ask Leo" AI Chatbot
   // ============================================
-  app.post("/api/ask-leo", async (req, res) => {
+  apiRouter.post("/ask-leo", async (req, res) => {
     try {
       const { message, childAge, program, history } = req.body;
 
@@ -751,27 +752,41 @@ Guidelines for your response:
     }
   });
 
+  // Mount apiRouter on both /api (standard) and / (in case Vercel rewrites strip /api prefix)
+  app.use("/api", apiRouter);
+  app.use(apiRouter);
+
   // ============================================
-  // Vite middleware for development
+  // Vite middleware for development & Static Production
   // ============================================
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+  async function startServer() {
+    if (process.env.NODE_ENV !== "production") {
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+    } else {
+      const distPath = path.join(process.cwd(), "dist");
+      app.use(express.static(distPath));
+      app.get("*", (req, res) => {
+        if (req.path.startsWith("/api/")) {
+          return res.status(404).json({ error: "API route not found" });
+        }
+        res.sendFile(path.join(distPath, "index.html"));
+      });
+    }
+
+    return app.listen(PORT, "0.0.0.0", () => {
+      console.log(`🦁 PreSchool Server running on port ${PORT}`);
+      console.log(`📊 Health Check: http://localhost:${PORT}/api/health`);
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`🦁 PreSchool Server running on port ${PORT}`);
-    console.log(`📊 Test Supabase: http://localhost:${PORT}/api/test-supabase`);
-  });
-}
+  // Only start listening automatically if not running in a Vercel serverless function environment
+  if (!process.env.VERCEL) {
+    startServer();
+  }
 
-startServer();
+  export { app, startServer };
+  export default app;
