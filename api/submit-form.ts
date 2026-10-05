@@ -175,6 +175,7 @@ const sendTelegramNotification = async (payload: {
       });
       clearTimeout(timeoutId);
       const data = await res.json().catch(() => null);
+      console.log("[Telegram Debug] Response:", JSON.stringify(data));
       return {
         status: res.status,
         ok: res.ok && data?.ok === true,
