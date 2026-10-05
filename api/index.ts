@@ -8,8 +8,8 @@ import submitFormHandler, {
   getTelegramBotToken,
   getTelegramChatId,
   sendTelegramNotification,
-} from "./submit-form";
-import askLeoHandler from "./ask-leo";
+} from "./submit-form.js";
+import askLeoHandler from "./ask-leo.js";
 
 dotenv.config();
 
